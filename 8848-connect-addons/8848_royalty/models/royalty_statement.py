@@ -3,6 +3,7 @@ from odoo.exceptions import UserError
 
 class RoyaltyStatement(models.Model):
     _name = '8848.royalty.statement'
+    _table = 'connect_royalty_statement'
     _description = 'Franchise Royalty Statement'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 

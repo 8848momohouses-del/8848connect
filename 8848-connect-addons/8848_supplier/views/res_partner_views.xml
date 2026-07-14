@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit partner form to add Supplier Info -->
+        <record id="view_partner_form_supplier" model="ir.ui.view">
+            <field name="name">res.partner.form.supplier.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Supplier Info" invisible="not is_supplier">
+                        <group>
+                            <group>
+                                <field name="is_supplier" invisible="1"/>
+                                <field name="quality_rating"/>
+                                <field name="on_time_delivery_rate"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Suppliers Action -->
+        <record id="action_suppliers" model="ir.actions.act_window">
+            <field name="name">Suppliers</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('is_supplier', '=', True)]</field>
+            <field name="context">{'default_is_supplier': True}</field>
+        </record>
+
+        <!-- Menu for Suppliers -->
+        <menuitem id="menu_suppliers_root" name="Suppliers" parent="purchase.menu_purchase_root" action="action_suppliers" sequence="15"/>
+    </data>
+</odoo>

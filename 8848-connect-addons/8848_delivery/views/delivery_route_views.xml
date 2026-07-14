@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List View -->
+        <record id="view_delivery_route_tree" model="ir.ui.view">
+            <field name="name">8848.delivery.route.list</field>
+            <field name="model">8848.delivery.route</field>
+            <field name="arch" type="xml">
+                <list string="Delivery Routes">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="driver_id"/>
+                    <field name="vehicle_id"/>
+                    <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'in_transit'" decoration-success="state == 'done'"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_delivery_route_form" model="ir.ui.view">
+            <field name="name">8848.delivery.route.form</field>
+            <field name="model">8848.delivery.route</field>
+            <field name="arch" type="xml">
+                <form string="Delivery Route">
+                    <header>
+                        <button name="action_start_route" string="Start Route" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_done" string="Mark Done" type="object" class="oe_highlight" invisible="state != 'in_transit'"/>
+                        <button name="action_cancel" string="Cancel" type="object" invisible="state in ('done', 'cancelled')"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,in_transit,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="date" readonly="state != 'draft'"/>
+                                <field name="driver_id" readonly="state != 'draft'"/>
+                            </group>
+                            <group>
+                                <field name="vehicle_id" readonly="state != 'draft'"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Deliveries">
+                                <field name="picking_ids" readonly="state != 'draft'">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="partner_id"/>
+                                        <field name="state"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_delivery_route" model="ir.actions.act_window">
+            <field name="name">Delivery Routes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">8848.delivery.route</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- Menus -->
+        <menuitem id="menu_8848_delivery_root" name="Delivery" sequence="30" parent="8848_franchise.menu_8848_franchise_root"/>
+        <menuitem id="menu_8848_delivery_routes" name="Delivery Routes" parent="menu_8848_delivery_root" action="action_delivery_route" sequence="1"/>
+    </data>
+</odoo>

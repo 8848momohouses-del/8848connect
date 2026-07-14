@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Tree View -->
+        <!-- List View -->
         <record id="view_royalty_statement_tree" model="ir.ui.view">
-            <field name="name">8848.royalty.statement.tree</field>
+            <field name="name">8848.royalty.statement.list</field>
             <field name="model">8848.royalty.statement</field>
             <field name="arch" type="xml">
-                <tree string="Royalty Statements">
+                <list string="Royalty Statements">
                     <field name="name"/>
                     <field name="franchise_id"/>
                     <field name="date_start"/>
@@ -14,7 +14,7 @@
                     <field name="total_sales"/>
                     <field name="royalty_amount"/>
                     <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'paid'" decoration-warning="state == 'invoiced'"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -64,7 +64,7 @@
             <field name="name">Royalty Statements</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">8848.royalty.statement</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
         </record>
 
         <!-- Menus -->

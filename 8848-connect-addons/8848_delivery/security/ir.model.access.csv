@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_delivery_route_user,delivery_route.user,model_8848_delivery_route,base.group_user,1,1,1,1
+access_delivery_route_admin,delivery_route.admin,model_8848_delivery_route,base.group_system,1,1,1,1

@@ -3,6 +3,7 @@ from odoo.exceptions import UserError
 
 class MarketingFeeStatement(models.Model):
     _name = '8848.marketing.fee.statement'
+    _table = 'connect_marketing_fee_statement'
     _description = 'Franchise Marketing Fee Statement'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Add Link to My Account Home -->
+        <template id="portal_my_home_franchise" name="Show Franchise Dashboard" inherit_id="portal.portal_my_home">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-if="request.env.user.partner_id.is_franchise">
+                    <div class="o_portal_category row g-2 mt-3" id="portal_franchise">
+                        <a href="/my/franchise" class="col-12 col-md-4 text-decoration-none">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary"><i class="fa fa-briefcase me-2"/>Franchise Dashboard</h5>
+                                    <p class="card-text text-muted">View your store metrics, deliveries, and royalties.</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+
+        <!-- Franchise Dashboard Page -->
+        <template id="portal_franchise_dashboard" name="Franchise Dashboard">
+            <t t-call="portal.portal_layout">
+                <div class="container mt-4">
+                    <h3 class="mb-4">Welcome back, <t t-esc="partner.name"/></h3>
+
+                    <div class="row g-4 mb-5">
+                        <!-- Pending Deliveries -->
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow-sm" style="border-radius: 0.5rem; border: none;">
+                                <div class="card-body text-center">
+                                    <h5 class="text-muted mb-3">Pending Deliveries</h5>
+                                    <h2 class="text-primary fw-bold"><t t-esc="len(pending_deliveries)"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Outstanding Balance -->
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow-sm" style="border-radius: 0.5rem; border: none;">
+                                <div class="card-body text-center">
+                                    <h5 class="text-muted mb-3">Outstanding Balance</h5>
+                                    <h2 class="text-danger fw-bold">$<t t-esc="'%.2f' % outstanding_balance"/></h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Royalty Statements -->
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow-sm" style="border-radius: 0.5rem; border: none;">
+                                <div class="card-body text-center">
+                                    <h5 class="text-muted mb-3">Statements</h5>
+                                    <h2 class="text-primary fw-bold"><t t-esc="len(statements)"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details Section -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Recent Deliveries</h4>
+                            <div class="list-group">
+                                <t t-foreach="pending_deliveries" t-as="delivery">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0"><t t-esc="delivery.name"/></h6>
+                                        </div>
+                                        <span class="badge bg-warning rounded-pill"><t t-esc="delivery.state"/></span>
+                                    </div>
+                                </t>
+                                <t t-if="not pending_deliveries">
+                                    <div class="list-group-item text-muted">No pending deliveries.</div>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4 class="mb-3">Recent Royalties</h4>
+                            <div class="list-group">
+                                <t t-foreach="statements" t-as="stmt">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0"><t t-esc="stmt.name"/></h6>
+                                            <small class="text-muted"><t t-esc="stmt.date_start"/> to <t t-esc="stmt.date_end"/></small>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">$<t t-esc="'%.2f' % stmt.royalty_amount"/></span>
+                                    </div>
+                                </t>
+                                <t t-if="not statements">
+                                    <div class="list-group-item text-muted">No statements generated yet.</div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
