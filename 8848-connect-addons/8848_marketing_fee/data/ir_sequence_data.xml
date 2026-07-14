@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Sequence for Marketing Fee Statement -->
+        <record id="seq_marketing_fee_statement" model="ir.sequence">
+            <field name="name">Marketing Fee Sequence</field>
+            <field name="code">8848.marketing.fee.statement</field>
+            <field name="prefix">MKT/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

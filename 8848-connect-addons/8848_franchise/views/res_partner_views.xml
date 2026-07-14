@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View Extension -->
+        <record id="view_partner_form_franchise" model="ir.ui.view">
+            <field name="name">res.partner.form.franchise</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <!-- Add Checkbox to partner type -->
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="is_franchise"/>
+                </xpath>
+                
+                <!-- Add Franchise Notebook Page -->
+                <xpath expr="//notebook" position="inside">
+                    <page string="Franchise Information" invisible="not is_franchise">
+                        <group>
+                            <group string="Store Details">
+                                <field name="store_id"/>
+                                <field name="territory"/>
+                                <field name="franchise_status"/>
+                            </group>
+                            <group string="Financial Agreements">
+                                <field name="royalty_percentage"/>
+                                <field name="marketing_fee_percentage"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Window Action for Franchises -->
+        <record id="action_8848_franchise" model="ir.actions.act_window">
+            <field name="name">Franchises</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('is_franchise', '=', True)]</field>
+            <field name="context">{'default_is_franchise': True}</field>
+        </record>
+
+        <!-- Menu Items -->
+        <menuitem id="menu_8848_franchise_root" name="Franchise" sequence="10" web_icon="8848_franchise,static/description/icon.png"/>
+        <menuitem id="menu_8848_franchise_list" name="Franchisees" parent="menu_8848_franchise_root" action="action_8848_franchise" sequence="1"/>
+    </data>
+</odoo>
