@@ -1,0 +1,32 @@
+// ============================================================
+// 8848 glass skin — final overrides, loaded at end of bundle.
+// Replaces the theme's stock SVG background with a brand
+// red/white/blue gradient and adds readability guarantees.
+// ============================================================
+
+.o_web_client {
+    // Deep navy -> brand blue, with a soft red glow (bottom right)
+    // and a faint white sheen (top left): red / white / blue.
+    background:
+        radial-gradient(1100px 750px at 88% 112%, rgba(230, 57, 70, 0.38), transparent 60%),
+        radial-gradient(900px 650px at -8% -12%, rgba(255, 255, 255, 0.10), transparent 55%),
+        linear-gradient(135deg, #081a38 0%, #0a3b7c 55%, #104592 100%) !important;
+    background-attachment: fixed !important;
+}
+
+// Readability guarantees on glass panels ------------------------------
+
+// Links inside content areas: bright blue tint, always visible on navy.
+.o_web_client .o_content a:not(.btn) {
+    color: #8ab4ff;
+}
+
+// Placeholder text in inputs on glass forms.
+.o_web_client .o_content ::placeholder {
+    color: rgba(255, 255, 255, 0.55) !important;
+}
+
+// Badges/tags rendered on glass keep readable text.
+.o_web_client .o_tag {
+    color: #fff;
+}

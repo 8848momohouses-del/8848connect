@@ -1,0 +1,25 @@
+// ============================================================
+// 8848 brand palette injected AFTER theme_liquid_glass variables
+// and BEFORE the rest of its SCSS compiles — every theme rule
+// below this point picks up these values instead of the teal.
+// Brand: red #E63946 · white · blue #0A3B7C
+// ============================================================
+
+// Bright brand blue for interactive accents (dark #0A3B7C is
+// unreadable on dark glass, so accents use a vivid tint of it).
+$primary-color: #4d8dff;
+
+// Signature CTA gradient: 8848 red -> brand blue.
+$primary-gradient: linear-gradient(
+    90deg,
+    rgba(230, 57, 70, 0.85),
+    rgba(46, 99, 231, 0.80)
+);
+
+// Contrast fixes: the theme's muted text (65% white) fails on
+// busy glass panels — lift it, and brighten hover feedback.
+$text-muted: rgba(255, 255, 255, 0.78);
+$hover-bg: rgba(255, 255, 255, 0.22);
+
+// Slightly bluer dropdown glass so menus read as "brand navy".
+$glass-dropdown: rgba(16, 38, 78, 0.88);
