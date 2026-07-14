@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Override the main web layout to remove Odoo title -->
+        <template id="layout" inherit_id="web.layout" name="8848 Web Layout">
+            <xpath expr="//title" position="replace">
+                <title>8848 Connect</title>
+            </xpath>
+        </template>
+
+        <!-- Override login layout to remove 'Powered by Odoo' -->
+        <template id="login_layout_8848" inherit_id="web.login_layout" name="8848 Login Layout">
+            <xpath expr="//div[hasclass('text-center', 'small')]" position="replace">
+                <div class="text-center small mt-4 pt-4 border-top">
+                    Powered by <b>8848 Momo House</b>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

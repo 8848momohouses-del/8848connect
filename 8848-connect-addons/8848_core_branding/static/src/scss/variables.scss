@@ -1,0 +1,27 @@
+/* 8848 Connect - Premium Theme Variables */
+
+// 1. BRAND COLORS (White, Blue, Red)
+$brand-8848-blue: #0A3B7C;
+$brand-8848-red: #E63946;
+$brand-8848-white: #FFFFFF;
+$brand-8848-bg-light: #F8F9FA;
+
+// 2. ODOO BRANDING OVERRIDES
+$o-brand-odoo: $brand-8848-blue;
+$o-brand-primary: $brand-8848-blue; 
+$o-brand-secondary: $brand-8848-bg-light;
+$primary: $brand-8848-blue;
+$danger: $brand-8848-red;
+
+// 3. TYPOGRAPHY
+$font-family-sans-serif: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif !default;
+
+// 4. SUBTLE STYLING & BORDERS
+$border-radius: 0.5rem;
+$btn-border-radius: 0.375rem;
+$input-border-radius: 0.375rem;
+
+// 5. CARDS & ELEVATION
+$card-border-radius: 0.75rem;
+$card-border-color: rgba(0, 0, 0, 0.05);
+$card-bg: $brand-8848-white;

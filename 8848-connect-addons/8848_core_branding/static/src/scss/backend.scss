@@ -1,0 +1,84 @@
+/* 8848 Connect - Backend SCSS */
+
+// Clean UI overrides based on 8848 Brand Guidelines
+.o_web_client {
+    font-family: $font-family-sans-serif;
+    background-color: #F8F9FA; // $8848-bg-light
+    
+    // Modern Top Navbar (Blue Background with White Text)
+    .o_main_navbar {
+        background-color: #0A3B7C !important;
+        border-bottom: none;
+        color: #FFFFFF;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        .o_menu_brand {
+            color: #FFFFFF;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .o_menu_sections > li > a, .o_menu_systray > li > a {
+            color: rgba(255, 255, 255, 0.9);
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #FFFFFF;
+            }
+        }
+    }
+
+    // Modern Cards (Kanban, Form sheets)
+    .o_form_view .o_form_sheet_bg {
+        background-color: transparent !important;
+        
+        .o_form_sheet {
+            background-color: #FFFFFF;
+            border-radius: $card-border-radius;
+            border: 1px solid $card-border-color;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+    }
+
+    // Kanban views
+    .o_kanban_view .o_kanban_record {
+        background-color: #FFFFFF;
+        border-radius: 8px;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+        &:hover {
+            box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+    }
+    
+    // Primary Buttons (Blue) and Danger Buttons (Red) 
+    .btn-primary {
+        background-color: #0A3B7C;
+        border-color: #0A3B7C;
+        &:hover {
+            background-color: darken(#0A3B7C, 5%);
+            border-color: darken(#0A3B7C, 5%);
+        }
+    }
+    
+    .btn-danger {
+        background-color: #E63946;
+        border-color: #E63946;
+        &:hover {
+            background-color: darken(#E63946, 5%);
+            border-color: darken(#E63946, 5%);
+        }
+    }
+}
+
+// Ensure login screen looks premium
+.o_database_list {
+    background-color: #FFFFFF;
+    border-radius: $card-border-radius;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: none;
+}

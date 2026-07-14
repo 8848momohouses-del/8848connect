@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Set the Dashboard as the default home action for users -->
+        <record id="base.user_root" model="res.users">
+            <field name="action_id" ref="board.open_board_my_dash_action"/>
+        </record>
+        <record id="base.user_admin" model="res.users">
+            <field name="action_id" ref="board.open_board_my_dash_action"/>
+        </record>
+        <record id="base.default_user" model="res.users">
+            <field name="action_id" ref="board.open_board_my_dash_action"/>
+        </record>
+        
+        <!-- Force Dashboard to be the absolute first app (Odoo redirects to the first app by default) -->
+        <menuitem
+            id="menu_8848_dashboard_root"
+            name="Dashboard"
+            action="board.open_board_my_dash_action"
+            sequence="0"
+            web_icon="board,static/description/icon.png"/>
+    </data>
+</odoo>
