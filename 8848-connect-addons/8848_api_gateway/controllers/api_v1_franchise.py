@@ -6,6 +6,8 @@ from .api_auth import authenticate_request, ApiAuthException
 import uuid
 import datetime
 
+import psycopg2
+
 _logger = logging.getLogger(__name__)
 
 class ApiV1FranchiseController(http.Controller):
@@ -38,48 +40,48 @@ class ApiV1FranchiseController(http.Controller):
         # 3. Transport Idempotency and Audit Log setup
         ReqLog = request.env['8848.api.request.log'].sudo()
         
-        # Check if already processed (Catch concurrent uniqueness or replay)
-        existing_log = ReqLog.search([
-            ('api_client_id', '=', client.id),
-            ('route_code', '=', 'franchise_inquiry'),
-            ('idempotency_key', '=', idempotency_key)
-        ], limit=1)
-        
-        if existing_log:
+        try:
+            with request.env.cr.savepoint():
+                current_log = ReqLog.create({
+                    'api_client_id': client.id,
+                    'route_code': 'franchise_inquiry',
+                    'http_method': request.httprequest.method,
+                    'idempotency_key': idempotency_key,
+                    'request_body_hash': body_hash,
+                    'state': 'processing',
+                    'started_at': started_at,
+                    'source_ip': request.httprequest.remote_addr,
+                })
+        except psycopg2.IntegrityError:
+            # DB UniqueViolation caught safely using a savepoint
+            existing_log = ReqLog.search([
+                ('api_client_id', '=', client.id),
+                ('route_code', '=', 'franchise_inquiry'),
+                ('idempotency_key', '=', idempotency_key)
+            ], limit=1)
+            
+            if not existing_log:
+                return self._json_response({'success': False, 'error': 'Concurrency recovery failed', 'correlation_id': correlation_id}, status=500)
+                
             if existing_log.state == 'processing':
-                # Concurrent request or stuck
-                return self._json_response({'success': False, 'error': 'Request already processing', 'correlation_id': correlation_id}, status=409)
+                # Check for stuck request (e.g., > 1 hour old)
+                if (started_at - existing_log.started_at).total_seconds() > 3600:
+                    current_log = existing_log
+                    current_log.write({'state': 'processing', 'started_at': started_at})
+                else:
+                    return self._json_response({'success': False, 'error': 'Request already processing', 'correlation_id': correlation_id}, status=409)
             elif existing_log.request_body_hash != body_hash:
                 return self._json_response({'success': False, 'error': 'Idempotency key reused with different payload', 'correlation_id': correlation_id}, status=409)
             elif existing_log.state == 'success':
-                # Return cached response safely
                 cached_resp = json.loads(existing_log.safe_response_payload or '{}')
                 cached_resp['correlation_id'] = correlation_id
                 return self._json_response(cached_resp, status=existing_log.response_status or 200)
             elif existing_log.state == 'error':
-                # Allow retry if it previously failed (depends on business logic, but typically safe)
-                pass
-
-        # Create new log
-        try:
-            log_vals = {
-                'api_client_id': client.id,
-                'route_code': 'franchise_inquiry',
-                'http_method': request.httprequest.method,
-                'idempotency_key': idempotency_key,
-                'request_body_hash': body_hash,
-                'state': 'processing',
-                'started_at': started_at,
-                'source_ip': request.httprequest.remote_addr,
-            }
-            if existing_log:
                 current_log = existing_log
                 current_log.write({'state': 'processing', 'started_at': started_at})
-            else:
-                current_log = ReqLog.create(log_vals)
         except Exception as e:
-            # Handle DB UniqueViolation safely
-            return self._json_response({'success': False, 'error': 'Conflict creating request log', 'correlation_id': correlation_id}, status=409)
+            _logger.error(f"Unrelated Log Exception: {str(e)}")
+            return self._json_response({'success': False, 'error': 'Internal Server Error', 'correlation_id': correlation_id}, status=500)
 
         # 4. Delegate to CRM Intake Service
         try:

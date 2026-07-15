@@ -48,7 +48,11 @@ print(f"X-8848-Signature: {signature}")
 ```
 
 ## Payload Limit
-The API strictly enforces a **1MB maximum payload size** at both the Nginx proxy layer and the Odoo controller layer. Requests exceeding 1MB will be rejected with an HTTP 413 Payload Too Large error before any JSON processing occurs. Do not send large documents through this endpoint.
+The API strictly enforces a **1MB maximum payload size** at both the Nginx proxy layer and the Odoo controller layer. 
+- The enquiry endpoint accepts **JSON only**.
+- It does **not** accept uploaded files or binary blobs.
+- Detailed application documents will use a separate approved upload design.
+Requests exceeding 1MB will be rejected with an HTTP 413 Payload Too Large error before any JSON processing occurs. Do not send large documents through this endpoint.
 
 ## Idempotency and Duplicates
 If you send the same `X-8848-Idempotency-Key` and body within the same hour, the server returns the cached response (HTTP 200). 
