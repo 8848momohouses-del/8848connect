@@ -2,7 +2,8 @@ from odoo import api, fields, models
 
 
 class ResPartner(models.Model):
-    _inherit = 'res.partner'
+    _name = 'res.partner'
+    _inherit = ['res.partner', '8848.workflow.mixin']
 
     is_franchise = fields.Boolean(string='Is a Franchise', default=False)
     store_id = fields.Char(string='Store ID', help='Unique identifier for the franchise store')
@@ -92,3 +93,8 @@ class ResPartner(models.Model):
                 if first_stage:
                     missing_stage.franchise_stage_id = first_stage
         return res
+
+    def action_start_franchise_approval(self):
+        """Starts the Franchise Approval Workflow"""
+        for partner in self:
+            partner.action_start_workflow('FRANCHISE-APV')

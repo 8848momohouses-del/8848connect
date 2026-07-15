@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Franchise Approval Server Action -->
+        <record id="action_franchise_approve" model="ir.actions.server">
+            <field name="name">Franchise: Approve</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">
+# Set the franchise_approved flag
+record.write({'franchise_approved': True})
+            </field>
+        </record>
+
+        <!-- Definition -->
+        <record id="demo_workflow_franchise" model="8848.workflow.definition">
+            <field name="name">Franchise Application Approval</field>
+            <field name="code">FRANCHISE-APV</field>
+            <field name="target_model_id" ref="base.model_res_partner"/>
+            <field name="allow_multiple_active_instances" eval="False"/>
+        </record>
+
+        <!-- Steps -->
+        <record id="demo_step_franchise_draft" model="8848.workflow.step">
+            <field name="name">Application Received</field>
+            <field name="code">DRAFT</field>
+            <field name="workflow_id" ref="demo_workflow_franchise"/>
+            <field name="step_type">start</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="demo_step_franchise_review" model="8848.workflow.step">
+            <field name="name">Management Review</field>
+            <field name="code">REVIEW</field>
+            <field name="workflow_id" ref="demo_workflow_franchise"/>
+            <field name="step_type">approval</field>
+            <field name="sequence">20</field>
+            <field name="sla_hours">48</field>
+        </record>
+
+        <record id="demo_step_franchise_approved" model="8848.workflow.step">
+            <field name="name">Approved</field>
+            <field name="code">APPROVED</field>
+            <field name="workflow_id" ref="demo_workflow_franchise"/>
+            <field name="step_type">end</field>
+            <field name="sequence">30</field>
+            <field name="entry_action_id" ref="action_franchise_approve"/>
+        </record>
+
+        <record id="demo_step_franchise_rejected" model="8848.workflow.step">
+            <field name="name">Rejected</field>
+            <field name="code">REJECTED</field>
+            <field name="workflow_id" ref="demo_workflow_franchise"/>
+            <field name="step_type">end</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- Update workflow definition with initial step -->
+        <record id="demo_workflow_franchise" model="8848.workflow.definition">
+            <field name="initial_step_id" ref="demo_step_franchise_draft"/>
+        </record>
+
+        <!-- Transitions -->
+        <record id="demo_trans_draft_to_review" model="8848.workflow.transition">
+            <field name="name">Submit for Review</field>
+            <field name="workflow_id" ref="demo_workflow_franchise"/>
+            <field name="source_step_id" ref="demo_step_franchise_draft"/>
+            <field name="destination_step_id" ref="demo_step_franchise_review"/>
+        </record>
+
+        <record id="demo_trans_review_to_approved" model="8848.workflow.transition">
+            <field name="name">Approve Application</field>
+            <field name="workflow_id" ref="demo_workflow_franchise"/>
+            <field name="source_step_id" ref="demo_step_franchise_review"/>
+            <field name="destination_step_id" ref="demo_step_franchise_approved"/>
+            <field name="requires_comment" eval="True"/>
+        </record>
+
+        <record id="demo_trans_review_to_rejected" model="8848.workflow.transition">
+            <field name="name">Reject Application</field>
+            <field name="workflow_id" ref="demo_workflow_franchise"/>
+            <field name="source_step_id" ref="demo_step_franchise_review"/>
+            <field name="destination_step_id" ref="demo_step_franchise_rejected"/>
+            <field name="requires_comment" eval="True"/>
+        </record>
+    </data>
+</odoo>

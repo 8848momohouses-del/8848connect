@@ -10,9 +10,16 @@
                 <!-- Lifecycle stage bar on top of the record -->
                 <xpath expr="//sheet" position="before">
                     <header invisible="not is_franchise">
+                        <button name="action_start_franchise_approval" type="object" string="Start Approval Process" class="oe_highlight" invisible="franchise_approved"/>
                         <field name="franchise_stage_id" widget="statusbar"
                                options="{'clickable': '1', 'fold_field': 'fold'}"/>
                     </header>
+                </xpath>
+
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" type="object" name="action_view_workflows" icon="fa-tasks" invisible="not is_franchise">
+                        <field name="workflow_count" widget="statinfo" string="Workflows"/>
+                    </button>
                 </xpath>
 
                 <!-- Add Checkbox to partner type -->
