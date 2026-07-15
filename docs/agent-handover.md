@@ -23,4 +23,5 @@
 - **Strict Constraint:** Must not use Odoo Enterprise tools or overwrite existing `state`/`stage_id` fields natively used by Odoo core and business models.
 - **Batch Status:** 
   - **Batch W1**: COMPLETED (Foundation models, views, and security).
-  - **Batch W2**: PENDING (Definition, steps, transitions and instance engine).
+  - **Batch W2**: COMPLETED (Definition, steps, transitions and instance engine).
+  - **Batch W3**: PENDING (Activities, approvals, logs and server-side permission checks).
