@@ -24,4 +24,5 @@
 - **Batch Status:** 
   - **Batch W1**: COMPLETED (Foundation models, views, and security).
   - **Batch W2**: COMPLETED (Definition, steps, transitions and instance engine).
-  - **Batch W3**: PENDING (Activities, approvals, logs and server-side permission checks).
+  - **Batch W3**: COMPLETED (Activities, approvals, logs and server-side permission checks).
+  - **Batch W4**: PENDING (Events, idempotency, escalation and scheduled actions).
