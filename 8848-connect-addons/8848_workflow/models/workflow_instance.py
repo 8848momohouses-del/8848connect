@@ -213,6 +213,22 @@ class WorkflowInstance(models.Model):
             'comment': _("Transitioned via %s") % transition.name
         })
 
+    def action_open_wizard(self):
+        self.ensure_one()
+        if self.state != 'in_progress':
+            raise ValidationError(_("Workflow is not in progress."))
+            
+        return {
+            'name': _('Execute Transition'),
+            'type': 'ir.actions.act_window',
+            'res_model': '8848.workflow.action.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_instance_id': self.id,
+            }
+        }
+
     @api.model
     def _cron_process_automations_and_slas(self):
         """

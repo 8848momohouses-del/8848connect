@@ -6,7 +6,8 @@ class WorkflowActionWizard(models.TransientModel):
     _description = 'Workflow Action Wizard'
 
     instance_id = fields.Many2one('8848.workflow.instance', string='Workflow Instance', required=True)
-    transition_id = fields.Many2one('8848.workflow.transition', string='Transition', required=True)
+    transition_id = fields.Many2one('8848.workflow.transition', string='Transition', required=True, domain="[('source_step_id', '=', current_step_id)]")
+    current_step_id = fields.Many2one('8848.workflow.step', related='instance_id.current_step_id')
     
     requires_comment = fields.Boolean(related='transition_id.requires_comment')
     requires_attachment = fields.Boolean(related='transition_id.requires_attachment')

@@ -8,13 +8,14 @@
                 <sheet>
                     <group>
                         <field name="instance_id" invisible="1"/>
-                        <field name="transition_id" invisible="1"/>
+                        <field name="current_step_id" invisible="1"/>
+                        <field name="transition_id" options="{'no_create': True, 'no_open': True}"/>
                         <field name="requires_comment" invisible="1"/>
                         <field name="requires_attachment" invisible="1"/>
                         
-                        <field name="comment" attrs="{'required': [('requires_comment', '=', True)], 'invisible': [('requires_comment', '=', False)]}"/>
+                        <field name="comment" required="requires_comment" invisible="not requires_comment"/>
                         <field name="attachment_name" invisible="1"/>
-                        <field name="attachment" filename="attachment_name" attrs="{'required': [('requires_attachment', '=', True)], 'invisible': [('requires_attachment', '=', False)]}"/>
+                        <field name="attachment" filename="attachment_name" required="requires_attachment" invisible="not requires_attachment"/>
                     </group>
                     <footer>
                         <button name="action_confirm" string="Confirm" type="object" class="btn-primary"/>

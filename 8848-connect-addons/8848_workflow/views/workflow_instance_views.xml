@@ -25,6 +25,7 @@
         <field name="arch" type="xml">
             <form string="Workflow Instance" create="false" edit="false">
                 <header>
+                    <button name="action_open_wizard" type="object" string="Execute Transition" class="oe_highlight" invisible="state != 'in_progress'"/>
                     <field name="state" widget="statusbar" statusbar_visible="in_progress,completed,cancelled"/>
                 </header>
                 <sheet>
