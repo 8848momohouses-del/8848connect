@@ -204,3 +204,82 @@ class CrmLead(models.Model):
                 score += 5
                 
             lead.franchise_score = score
+
+    def submit_franchise_application(self, payload):
+        """
+        CRM Service to receive detailed application data.
+        """
+        self.ensure_one()
+        
+        # Calculate new version
+        current_apps = self.application_ids
+        new_version = len(current_apps) + 1
+        
+        app_vals = {
+            'lead_id': self.id,
+            'version': new_version,
+            'status': 'submitted',
+            'submission_date': fields.Datetime.now(),
+            'business_experience': payload.get('business_experience'),
+            'hospitality_experience': payload.get('hospitality_experience', False),
+            'total_assets': payload.get('total_assets', 0.0),
+            'investment_available': payload.get('investment_available', 0.0),
+            'finance_required': payload.get('finance_required', False),
+            'partnership_details': payload.get('partnership_details'),
+        }
+        
+        app = self.env['8848.franchise.application'].create(app_vals)
+        
+        # Re-compute score since application data changed
+        self.recalculate_franchise_score()
+        
+        self.message_post(body=f"Franchise Application v{new_version} submitted.")
+        
+        if hasattr(self, 'action_emit_event'):
+            self.action_emit_event('application_received')
+            
+        self._create_followup_activity('Review Franchise Application', delay_days=2)
+        return app
+
+    def action_convert_to_franchise(self):
+        """
+        Controlled conversion from CRM Lead to Franchise Partner.
+        Only happens when management is ready.
+        """
+        for lead in self:
+            if not lead.partner_id:
+                # Create the partner
+                partner_vals = {
+                    'name': lead.contact_name,
+                    'email': lead.email_from,
+                    'mobile': lead.mobile,
+                    'is_franchise': True,
+                    'territory': lead.franchise_territory_interest,
+                    'enquiry_date': lead.create_date.date(),
+                }
+                
+                # If there is an active application, copy its submission date
+                if lead.active_application_id and lead.active_application_id.submission_date:
+                    partner_vals['application_date'] = lead.active_application_id.submission_date.date()
+                    
+                partner = self.env['res.partner'].create(partner_vals)
+                lead.partner_id = partner.id
+            else:
+                partner = lead.partner_id
+                # Ensure existing partner is flagged as franchise
+                if not partner.is_franchise:
+                    partner.is_franchise = True
+            
+            # Link all applications to the partner
+            lead.application_ids.write({'partner_id': partner.id})
+            
+            # Note: We do NOT set is_operational = True here. 
+            # Operational status is controlled by the 8848_franchise lifecycle.
+            
+            lead.message_post(body=f"Lead successfully converted/linked to Franchise Master Record: {partner.name}")
+            
+            # If the user hasn't won the CRM opportunity, we can mark it won
+            if lead.stage_id and lead.stage_id.is_won == False:
+                won_stage = self.env['crm.stage'].search([('is_won', '=', True)], limit=1)
+                if won_stage:
+                    lead.stage_id = won_stage.id
