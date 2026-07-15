@@ -70,7 +70,7 @@
         <field name="name">8848.workflow.definition.search</field>
         <field name="model">8848.workflow.definition</field>
         <field name="arch" type="xml">
-            <search string="Search Workflow Definitions">
+            <search>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="target_model_id"/>

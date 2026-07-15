@@ -72,16 +72,16 @@
         <field name="name">8848.workflow.instance.search</field>
         <field name="model">8848.workflow.instance</field>
         <field name="arch" type="xml">
-            <search string="Search Instances">
+            <search>
                 <field name="reference"/>
                 <field name="workflow_id"/>
                 <field name="res_model"/>
                 <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
                 <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
-                <group string="Group By">
+                
                     <filter string="Workflow" name="group_by_workflow" context="{'group_by':'workflow_id'}"/>
                     <filter string="State" name="group_by_state" context="{'group_by':'state'}"/>
-                </group>
+                
             </search>
         </field>
     </record>

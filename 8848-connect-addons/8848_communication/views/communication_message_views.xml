@@ -70,10 +70,10 @@
                     <filter string="Queued" name="queued" domain="[('status', '=', 'queued')]"/>
                     <filter string="Failed" name="failed" domain="[('status', '=', 'failed')]"/>
                     <filter string="Sent" name="sent" domain="[('status', '=', 'sent')]"/>
-                    <group string="Group By">
+                    
                         <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
                         <filter string="Channel" name="group_channel" context="{'group_by': 'channel_id'}"/>
-                    </group>
+                    
                 </search>
             </field>
         </record>
