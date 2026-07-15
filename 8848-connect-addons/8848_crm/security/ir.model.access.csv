@@ -1,1 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_franchise_application_user,8848.franchise.application.user,model_8848_franchise_application,8848_security.group_8848_operations,1,1,1,0
+access_franchise_application_manager,8848.franchise.application.manager,model_8848_franchise_application,8848_security.group_8848_management,1,1,1,1
+access_franchise_application_accounts,8848.franchise.application.accounts,model_8848_franchise_application,8848_security.group_8848_accounts,1,0,0,0
