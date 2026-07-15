@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead_form_inherit_franchise" model="ir.ui.view">
+        <field name="name">crm.lead.form.inherit.franchise</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_convert_to_franchise" type="object" string="Convert to Franchise" class="oe_highlight" invisible="partner_id != False"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="enquiry_reference"/>
+                <field name="franchise_territory_interest"/>
+                <field name="external_entry_id"/>
+            </xpath>
+            <xpath expr="//page[@name='lead']" position="after">
+                <page string="Franchise Application" name="franchise_application">
+                    <group>
+                        <group>
+                            <field name="franchise_score"/>
+                            <field name="franchise_score_category" widget="badge" 
+                                   decoration-danger="franchise_score_category == 'hot'"
+                                   decoration-warning="franchise_score_category == 'warm'"
+                                   decoration-info="franchise_score_category == 'cold'"/>
+                        </group>
+                        <group>
+                            <field name="marketing_consent"/>
+                            <field name="privacy_consent"/>
+                        </group>
+                    </group>
+                    <field name="application_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="version"/>
+                            <field name="status"/>
+                            <field name="submission_date"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_crm_lead_kanban_inherit_franchise" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.inherit.franchise</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_kanban_content')]" position="inside">
+                <div t-if="record.franchise_score_category.raw_value">
+                    <span t-attf-class="badge rounded-pill #{record.franchise_score_category.raw_value == 'hot' and 'text-bg-danger' or record.franchise_score_category.raw_value == 'warm' and 'text-bg-warning' or 'text-bg-info'}">
+                        <field name="franchise_score_category"/>
+                    </span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="view_crm_lead_search_inherit_franchise" model="ir.ui.view">
+        <field name="name">crm.lead.search.inherit.franchise</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='unassigned']" position="after">
+                <filter string="Hot Franchise Leads" name="hot_franchise" domain="[('franchise_score_category', '=', 'hot')]"/>
+            </xpath>
+            <xpath expr="//filter[@name='salesperson']" position="after">
+                <filter string="Territory Interest" name="group_territory" context="{'group_by': 'franchise_territory_interest'}"/>
+                <filter string="Score Category" name="group_score_cat" context="{'group_by': 'franchise_score_category'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
