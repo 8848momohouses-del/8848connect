@@ -127,6 +127,21 @@ Installed custom modules (as of 2026-07-15):
 - `theme_liquid_glass` — third-party theme, vendored; never edit its files directly
   (override via `8848_glass_skin`).
 
+- `8848_baseline_tests` — test-only module (Milestone 0): installing it on an
+  empty DB is the full-stack install test; 15 regression tests tagged
+  `baseline_8848`. Run: `-i 8848_baseline_tests --test-enable --test-tags
+  baseline_8848 --http-port 8079` (side port avoids the live server).
+
+Milestone 0 infrastructure (2026-07-15): GitHub private repo
+`8848momohouses-del/8848-connect` (main = production branch, staging);
+tags from `v0-baseline`; CI on every push (validate: static checks +
+gitleaks + vendored guard; install-test: fresh-DB install + tests);
+`scripts/` (backup/restore/healthcheck/module_inventory/validate_addons);
+`deployment/` (compose + nginx templates for erp/portal/api.8848mh.com);
+`docs/` (rollback runbook, release template, schema + module baselines).
+Branch protection requires GitHub Pro (pending decision). Release rule:
+only release-manifest modules are ever upgraded, never all.
+
 Known conventions: module prefix `8848_`, LGPL-3, version strings currently `1.0`.
 Enterprise-only modules (knowledge, studio, barcode, planning, mrp_mps, quality
 worksheets, helpdesk, approvals…) are NOT available — Community-safe only.
