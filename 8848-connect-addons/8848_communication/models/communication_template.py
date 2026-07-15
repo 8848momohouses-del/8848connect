@@ -23,7 +23,7 @@ class CommunicationTemplate(models.Model):
         string='Supported Channels',
         help='Channels this template is designed to be sent through.'
     )
-
-    _sql_constraints = [
-        ('code_uniq', 'unique (code)', 'The template code must be unique!')
-    ]
+    _constraint_code_uniq = models.Constraint(
+        "unique (code)",
+        "The template code must be unique!"
+    )

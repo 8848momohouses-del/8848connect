@@ -43,12 +43,10 @@ class WorkflowInstance(models.Model):
                 record.reference = f"{record.workflow_id.code}-{record.res_model}-{record.res_id}"
             else:
                 record.reference = _("New Instance")
-
-    _sql_constraints = [
-        ('unique_active_instance', 
-         'unique(workflow_id, res_model, res_id, active)', 
-         'A business record can only have one active instance of a specific workflow!')
-    ]
+    _constraint_unique_active_instance = models.Constraint(
+        "unique(workflow_id, res_model, res_id, active)",
+        "A business record can only have one active instance of a specific workflow!"
+    )
 
     def _get_business_record(self):
         self.ensure_one()

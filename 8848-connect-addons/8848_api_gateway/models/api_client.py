@@ -29,7 +29,7 @@ class ApiClient(models.Model):
     
     allowed_ip_ranges = fields.Text(string='Allowed IP Ranges', help='Optional comma-separated CIDR blocks.')
     notes = fields.Text(string='Notes')
-
-    _sql_constraints = [
-        ('key_id_uniq', 'unique(key_id)', 'Key ID must be unique!')
-    ]
+    _constraint_key_id_uniq = models.Constraint(
+        "unique(key_id)",
+        "Key ID must be unique!"
+    )

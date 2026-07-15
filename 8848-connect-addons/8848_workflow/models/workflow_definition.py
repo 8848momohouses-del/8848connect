@@ -27,10 +27,10 @@ class WorkflowDefinition(models.Model):
         help="If false, a business record can only have one active instance of this workflow at a time."
     )
     automatic_start = fields.Boolean(string='Automatic Start', default=False, help="Automatically start when a matching record is created")
-
-    _sql_constraints = [
-        ('code_unique', 'unique(code, company_id)', 'Workflow code must be unique per company!')
-    ]
+    _constraint_code_unique = models.Constraint(
+        "unique(code, company_id)",
+        "Workflow code must be unique per company!"
+    )
 
     def action_instantiate(self, res_model, res_id, correlation_id=None):
         """

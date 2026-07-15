@@ -17,7 +17,7 @@ class CommunicationChannel(models.Model):
     is_active = fields.Boolean(string='Active', default=True)
     sequence = fields.Integer(string='Sequence', default=10)
     provider_config = fields.Text(string='Provider Configuration (JSON)', help='JSON configuration for the channel provider.')
-
-    _sql_constraints = [
-        ('code_uniq', 'unique (code)', 'The channel code must be unique!')
-    ]
+    _constraint_code_uniq = models.Constraint(
+        "unique (code)",
+        "The channel code must be unique!"
+    )

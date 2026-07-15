@@ -5,14 +5,14 @@
         <field name="name">8848.workflow.transition.tree</field>
         <field name="model">8848.workflow.transition</field>
         <field name="arch" type="xml">
-            <tree string="Workflow Transitions">
+            <list string="Workflow Transitions">
                 <field name="sequence" widget="handle"/>
                 <field name="workflow_id"/>
                 <field name="name"/>
                 <field name="source_step_id"/>
                 <field name="destination_step_id"/>
                 <field name="required_group_id"/>
-            </tree>
+            </list>
         </field>
     </record>
 

@@ -5,7 +5,7 @@
         <field name="name">8848.workflow.log.tree</field>
         <field name="model">8848.workflow.log</field>
         <field name="arch" type="xml">
-            <tree string="Workflow Logs" create="false" edit="false" delete="false">
+            <list string="Workflow Logs" create="false" edit="false" delete="false">
                 <field name="timestamp"/>
                 <field name="instance_id"/>
                 <field name="user_id"/>
@@ -13,7 +13,7 @@
                 <field name="source_step_id"/>
                 <field name="destination_step_id"/>
                 <field name="result"/>
-            </tree>
+            </list>
         </field>
     </record>
 

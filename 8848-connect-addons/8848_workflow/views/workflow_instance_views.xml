@@ -5,7 +5,7 @@
         <field name="name">8848.workflow.instance.tree</field>
         <field name="model">8848.workflow.instance</field>
         <field name="arch" type="xml">
-            <tree string="Workflow Instances" decoration-info="state=='in_progress'" decoration-success="state=='completed'" decoration-muted="state=='cancelled'">
+            <list string="Workflow Instances" decoration-info="state=='in_progress'" decoration-success="state=='completed'" decoration-muted="state=='cancelled'">
                 <field name="reference"/>
                 <field name="workflow_id"/>
                 <field name="res_model"/>
@@ -14,7 +14,7 @@
                 <field name="state" widget="badge"/>
                 <field name="started_at"/>
                 <field name="deadline"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -49,12 +49,12 @@
                     <notebook>
                         <page string="Logs">
                             <field name="log_ids" readonly="1">
-                                <tree>
+                                <list>
                                     <field name="timestamp"/>
                                     <field name="user_id"/>
                                     <field name="action"/>
                                     <field name="result"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>

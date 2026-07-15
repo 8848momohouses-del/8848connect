@@ -30,10 +30,10 @@ class ApiRequestLog(models.Model):
     
     source_ip = fields.Char(string='Source IP', readonly=True)
     safe_error_message = fields.Text(string='Safe Error Message', readonly=True)
-
-    _sql_constraints = [
-        ('idempotency_uniq', 'unique(api_client_id, route_code, idempotency_key)', 'Idempotency key must be unique per client and route!')
-    ]
+    _constraint_idempotency_uniq = models.Constraint(
+        "unique(api_client_id, route_code, idempotency_key)",
+        "Idempotency key must be unique per client and route!"
+    )
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -5,13 +5,13 @@
         <field name="name">8848.workflow.definition.tree</field>
         <field name="model">8848.workflow.definition</field>
         <field name="arch" type="xml">
-            <tree string="Workflow Definitions">
+            <list string="Workflow Definitions">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="target_model_id"/>
                 <field name="active" widget="boolean_toggle"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -44,12 +44,12 @@
                     <notebook>
                         <page string="Steps">
                             <field name="step_ids" context="{'default_workflow_id': id}">
-                                <tree>
+                                <list>
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
                                     <field name="code"/>
                                     <field name="step_type"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Description">
