@@ -107,12 +107,19 @@ Installed custom modules (as of 2026-07-15):
   to brand red/white/blue via SCSS variable injection; brand gradient background.
 - `8848_dashboard` — board-based Factory Dashboard (store performance + royalty
   widgets); it is the login landing action (`action_8848_factory_dashboard`).
-- `8848_franchise` — Franchise Master embryo: `res.partner` extension (`is_franchise`,
-  `store_id`, `territory`, `franchise_status`, `royalty_percentage`,
-  `marketing_fee_percentage`) + Franchise app menu. THIS is the current Franchise
-  Core; extend it rather than creating a parallel model.
+- `8848_franchise` v1.1 — THE Franchise Core (per approved decision: keep `8848_`
+  prefix; rules' `franchise_*` names are logical roles). `res.partner` extension:
+  `is_franchise`, `store_id`, `territory`, `franchise_status`, percentages, plus
+  lifecycle: `franchise_stage_id` (m2one to `8848.franchise.stage`, 15 seeded
+  stages, tracked), milestone dates (enquiry/application/agreement/deposit/
+  training/grand-opening/renewal), `franchise_approved`, and computed stored
+  `is_operational` (approved+agreement+deposit+opening — THE portal activation
+  gate). Kanban pipeline grouped by stage; Configuration menu for stages.
+  New franchises default to "Franchise Inquiry" stage.
 - `8848_royalty`, `8848_marketing_fee`, `8848_store_performance` — Phase 3 financial
-  modules built on `8848_franchise`.
+  modules built on `8848_franchise`; each adds its own smart button (statement/
+  performance counts) on the franchise partner form. Note: store_performance and
+  the statements use `partner.currency_id`, which requires the `account` dep.
 - `8848_factory`, `8848_inventory`, `8848_warehouse` (stock.lot QA/expiry fields),
   `8848_quality` — manufacturing/inventory layer.
 - `8848_delivery`, `8848_driver`, `8848_portal`, `8848_supplier` — WIP.

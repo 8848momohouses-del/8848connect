@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="stage_website_visitor" model="8848.franchise.stage">
+            <field name="name">Website Visitor</field>
+            <field name="sequence">1</field>
+            <field name="fold" eval="True"/>
+        </record>
+        <record id="stage_franchise_inquiry" model="8848.franchise.stage">
+            <field name="name">Franchise Inquiry</field>
+            <field name="sequence">2</field>
+        </record>
+        <record id="stage_crm_lead" model="8848.franchise.stage">
+            <field name="name">CRM Lead</field>
+            <field name="sequence">3</field>
+        </record>
+        <record id="stage_brochure_sent" model="8848.franchise.stage">
+            <field name="name">Brochure Sent</field>
+            <field name="sequence">4</field>
+        </record>
+        <record id="stage_application_submitted" model="8848.franchise.stage">
+            <field name="name">Application Submitted</field>
+            <field name="sequence">5</field>
+        </record>
+        <record id="stage_qualified" model="8848.franchise.stage">
+            <field name="name">Qualified</field>
+            <field name="sequence">6</field>
+        </record>
+        <record id="stage_discovery_meeting" model="8848.franchise.stage">
+            <field name="name">Discovery Meeting</field>
+            <field name="sequence">7</field>
+        </record>
+        <record id="stage_agreement_signed" model="8848.franchise.stage">
+            <field name="name">Agreement Signed</field>
+            <field name="sequence">8</field>
+        </record>
+        <record id="stage_deposit_received" model="8848.franchise.stage">
+            <field name="name">Deposit Received</field>
+            <field name="sequence">9</field>
+        </record>
+        <record id="stage_training" model="8848.franchise.stage">
+            <field name="name">Training</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="stage_store_fitout" model="8848.franchise.stage">
+            <field name="name">Store Fit-out</field>
+            <field name="sequence">11</field>
+        </record>
+        <record id="stage_grand_opening" model="8848.franchise.stage">
+            <field name="name">Grand Opening</field>
+            <field name="sequence">12</field>
+            <field name="is_operational_stage" eval="True"/>
+        </record>
+        <record id="stage_active_franchise" model="8848.franchise.stage">
+            <field name="name">Active Franchise</field>
+            <field name="sequence">13</field>
+            <field name="is_operational_stage" eval="True"/>
+        </record>
+        <record id="stage_operational_store" model="8848.franchise.stage">
+            <field name="name">Operational Store</field>
+            <field name="sequence">14</field>
+            <field name="is_operational_stage" eval="True"/>
+        </record>
+        <record id="stage_renewal_expansion" model="8848.franchise.stage">
+            <field name="name">Renewal / Expansion</field>
+            <field name="sequence">15</field>
+            <field name="is_operational_stage" eval="True"/>
+        </record>
+    </data>
+</odoo>

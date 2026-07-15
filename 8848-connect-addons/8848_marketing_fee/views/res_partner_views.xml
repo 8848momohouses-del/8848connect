@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_marketing_fee" model="ir.ui.view">
+        <field name="name">res.partner.form.marketing.fee</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_marketing_fee_statements" type="object"
+                        class="oe_stat_button" icon="fa-bullhorn"
+                        invisible="not is_franchise">
+                    <field name="marketing_fee_statement_count" widget="statinfo"
+                           string="Marketing Levy"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
