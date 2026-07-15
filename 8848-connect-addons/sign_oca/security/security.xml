@@ -3,7 +3,6 @@
     <!-- Privilege -->
     <record id="sign_oca_privilege" model="res.groups.privilege">
         <field name="name">Sign</field>
-        <field name="category_id" ref="base.module_category_productivity" />
     </record>
     <!-- Access Groups -->
     <record id="sign_oca_group_user" model="res.groups">

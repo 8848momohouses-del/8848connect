@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="module_category_8848_api" model="ir.module.category">
-        <field name="name">8848 API Gateway</field>
-        <field name="sequence">20</field>
-    </record>
-
     <record id="group_8848_api_admin" model="res.groups">
         <field name="name">API Integration Administrator</field>
-        <field name="category_id" ref="module_category_8848_api"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
     </record>
 </odoo>
