@@ -27,4 +27,5 @@
   - **Batch W3**: COMPLETED (Activities, approvals, logs and server-side permission checks).
   - **Batch W4**: COMPLETED (Events, idempotency, escalation and scheduled actions).
   - **Batch W5**: COMPLETED (Native views and menus).
-  - **Batch W6**: PENDING (Franchise approval proof of concept).
+  - **Batch W6**: COMPLETED (Franchise approval proof of concept).
+  - **Batch W7**: PENDING (Automated tests, documentation and final validation).
