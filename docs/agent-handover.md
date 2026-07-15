@@ -1,20 +1,29 @@
 # Agent Handover Documentation
 
-- **Current Milestone:** Milestone 0 (Verified)
-- **Current Branch:** main
-- **Last Completed Work:** Milestone 0 verification and security vulnerability identification.
-- **Outstanding Work:** Step 1 (8848_SECURITY implementation), Step 2-13.
+- **Current Milestone:** Step 1 (Completed)
+- **Current Branch:** feature/8848-security
+- **Last Completed Work:** Implementation of `8848_security` (Batches A, B, C, D) + Executive ACL Corrections.
+- **Outstanding Work:** Awaiting user to merge this branch and begin Step 2.
 - **Commands Used for Validation:**
-  - `python3 scripts/validate_addons.py`
-  - `ls -la` (to verify structural elements and files)
-  - `grep -rI "base.group_user"` (to identify security risks)
-- **Tests Passed:** `scripts/validate_addons.py` ran successfully on 18 modules (0 errors, 4 warnings for missing author keys).
-- **Known Issues:**
-  - Critical security vulnerability: `base.group_user` has full CRUD access to financial records (Royalty, Marketing Fee, Store Performance) and operational records (Delivery Routes).
+  - `dropdb Momohouse_test || true && createdb Momohouse_test`
+  - `./venv/bin/python setup/odoo -c odoo.conf -d Momohouse_test --http-port 8070 -i 8848_baseline_tests,8848_security... --test-tags /8848_baseline_tests --stop-after-init`
+- **Tests Passed:** `scripts/validate_addons.py` ran successfully. Odoo 19 core test suite ran with `0 failed, 0 error(s) of 20 tests` for the 8848 modules. The CEO and GM permissions and exact financial unlink blocks were thoroughly verified.
+- **Known Issues / Limitations:**
   - Missing author keys in `8848_dashboard`, `8848_portal`, `8848_store_performance`, `8848_supplier`.
-  - GitHub branch protection, Staging VPS, off-server backups, and production admin password strategy are pending external action.
-- **External Blockers:**
-  - Infrastructure configuration (VPS provisioning, branch protection) requires user credentials or purchase decisions. (This does not block local development).
-- **Next Approved Action:** Awaiting approval for Step 1 (8848_SECURITY) Implementation Plan.
-- **Files Changed:** N/A (Verification phase only)
-- **Commit Hashes:** Latest `fa32f6e67609e610bfa03af2a12733af5218a2d8`
+  - Store performance has no state field, meaning records cannot be deleted even when draft (it unconditionally blocks deletion). *Future Recommendation: Introduce state workflow to allow draft corrections.*
+  - Infrastructure configuration (VPS provisioning, branch protection) requires user credentials or purchase decisions.
+- **Rollback Procedure:**
+  1. Take full DB and filestore backups.
+  2. Revert git to Milestone 0 (`fa32f6e`).
+  3. Restart Odoo service.
+  4. Run `odoo -u 8848_franchise,8848_royalty,8848_marketing_fee,8848_store_performance,8848_delivery` to overwrite strict CSVs.
+  5. The `8848_security` module is now orphaned. Uninstall it via UI or CLI (`odoo -u base --uninstall 8848_security`).
+- **Merge Recommendation:** All criteria for Step 1 are met. We recommend merging `feature/8848-security` to `main` and beginning Step 2.
+- **Files Changed:** Created `8848_security`, updated `ir.model.access.csv` in `8848_franchise`, `8848_royalty`, `8848_marketing_fee`, `8848_store_performance`, `8848_delivery`. Added `unlink()` overrides. Created integrated testing in `8848_baseline_tests/tests/test_security.py`.
+- **Commit Hashes:**
+  - Latest `[HEAD]` (Executive ACL corrections & Verification Tests)
+  - `2ccf98f` (Batch D)
+  - `25b9666` (Batch C)
+  - `4e9dbec` (Batch B)
+  - `e94f0e7` (Batch A)
+  - Base: `fa32f6e` (Milestone 0)

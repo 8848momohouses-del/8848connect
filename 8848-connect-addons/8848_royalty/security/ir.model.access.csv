@@ -3,3 +3,5 @@ access_royalty_statement_user,royalty_statement.user,model_8848_royalty_statemen
 access_royalty_statement_read,royalty_statement.read,model_8848_royalty_statement,base.group_user,1,0,0,0
 access_royalty_statement_acc_user,royalty_statement.acc_user,model_8848_royalty_statement,8848_security.group_8848_acc_user,1,1,1,0
 access_royalty_statement_admin,royalty_statement.admin,model_8848_royalty_statement,base.group_system,1,1,1,1
+access_royalty_statement_ceo,royalty_statement.ceo,model_8848_royalty_statement,8848_security.group_8848_ceo,1,1,1,1
+access_royalty_statement_gm,royalty_statement.gm,model_8848_royalty_statement,8848_security.group_8848_gm,1,0,0,0

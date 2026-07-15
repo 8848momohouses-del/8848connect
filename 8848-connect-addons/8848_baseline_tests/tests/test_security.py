@@ -33,6 +33,24 @@ class TestSecurityEffectivePermissions(TransactionCase):
             ])]
         })
         
+        cls.user_gm = cls.env['res.users'].create({
+            'name': 'General Manager',
+            'login': 'gm_user',
+            'group_ids': [(6, 0, [
+                cls.env.ref('base.group_user').id,
+                cls.env.ref('8848_security.group_8848_gm').id
+            ])]
+        })
+        
+        cls.user_ceo = cls.env['res.users'].create({
+            'name': 'CEO',
+            'login': 'ceo_user',
+            'group_ids': [(6, 0, [
+                cls.env.ref('base.group_user').id,
+                cls.env.ref('8848_security.group_8848_ceo').id
+            ])]
+        })
+        
         # Create test franchise
         cls.franchise = cls.env['res.partner'].create({
             'name': 'Test Franchise',
@@ -45,6 +63,12 @@ class TestSecurityEffectivePermissions(TransactionCase):
             'date_start': '2026-01-01',
             'date_end': '2026-01-31',
             'total_sales': 1000,
+        })
+        
+        # Create test franchise stage
+        cls.franchise_stage = cls.env['8848.franchise.stage'].create({
+            'name': 'Test Stage',
+            'sequence': 10,
         })
 
     def test_01_internal_user_readonly(self):
@@ -89,3 +113,28 @@ class TestSecurityEffectivePermissions(TransactionCase):
         # Write should fail
         with self.assertRaises(AccessError):
             self.royalty.with_user(self.user_ops_manager).write({'total_sales': 3000})
+            
+    def test_05_executive_permissions(self):
+        """Verify GM and CEO broad access without relying on base system groups or inheriting all departments."""
+        # Ensure neither has base.group_system
+        self.assertFalse(self.user_gm.has_group('base.group_system'))
+        self.assertFalse(self.user_ceo.has_group('base.group_system'))
+        
+        # Ensure they do not inherit ops_manager directly (they only get what we granted via ir.model.access.csv)
+        self.assertFalse(self.user_gm.has_group('8848_security.group_8848_ops_manager'))
+        self.assertFalse(self.user_ceo.has_group('8848_security.group_8848_ops_manager'))
+        
+        # GM Operational write access (Franchise Stage)
+        self.franchise_stage.with_user(self.user_gm).write({'name': 'GM Stage Update'})
+        
+        # GM Financial read-only access (Royalty Statement)
+        self.royalty.with_user(self.user_gm).read(['name'])
+        with self.assertRaises(AccessError):
+            self.royalty.with_user(self.user_gm).write({'total_sales': 9999})
+            
+        # CEO Broad write access (Franchise Stage AND Royalty Statement)
+        self.franchise_stage.with_user(self.user_ceo).write({'name': 'CEO Stage Update'})
+        self.royalty.with_user(self.user_ceo).write({'total_sales': 5000})
+        
+        # CEO Unlink safe financial (draft)
+        self.royalty.with_user(self.user_ceo).unlink()
