@@ -26,7 +26,6 @@ class ApiV1FranchiseController(http.Controller):
             
         # 2. Parse & Validate JSON payload
         raw_body = request.httprequest.get_data()
-        # Max 10MB payload (should be blocked by nginx earlier, but safeguard here)
         if len(raw_body) > 10 * 1024 * 1024:
             return self._json_response({'success': False, 'error': 'Payload too large', 'correlation_id': correlation_id}, status=413)
 
@@ -35,9 +34,106 @@ class ApiV1FranchiseController(http.Controller):
         except json.JSONDecodeError:
             return self._json_response({'success': False, 'error': 'Invalid JSON', 'correlation_id': correlation_id}, status=422)
             
-        # TODO: A4 Batch - Strict validation and A5 Batch - Delegation to CRM
+        # 3. Transport Idempotency and Audit Log setup
+        ReqLog = request.env['8848.api.request.log'].sudo()
         
-        return self._json_response({'success': True, 'correlation_id': correlation_id}, status=201)
+        # Check if already processed (Catch concurrent uniqueness or replay)
+        existing_log = ReqLog.search([
+            ('api_client_id', '=', client.id),
+            ('route_code', '=', 'franchise_inquiry'),
+            ('idempotency_key', '=', idempotency_key)
+        ], limit=1)
+        
+        if existing_log:
+            if existing_log.state == 'processing':
+                # Concurrent request or stuck
+                return self._json_response({'success': False, 'error': 'Request already processing', 'correlation_id': correlation_id}, status=409)
+            elif existing_log.request_body_hash != body_hash:
+                return self._json_response({'success': False, 'error': 'Idempotency key reused with different payload', 'correlation_id': correlation_id}, status=409)
+            elif existing_log.state == 'success':
+                # Return cached response safely
+                cached_resp = json.loads(existing_log.safe_response_payload or '{}')
+                cached_resp['correlation_id'] = correlation_id
+                return self._json_response(cached_resp, status=existing_log.response_status or 200)
+            elif existing_log.state == 'error':
+                # Allow retry if it previously failed (depends on business logic, but typically safe)
+                pass
+
+        # Create new log
+        try:
+            log_vals = {
+                'api_client_id': client.id,
+                'route_code': 'franchise_inquiry',
+                'http_method': request.httprequest.method,
+                'idempotency_key': idempotency_key,
+                'request_body_hash': body_hash,
+                'state': 'processing',
+                'started_at': started_at,
+                'source_ip': request.httprequest.remote_addr,
+            }
+            if existing_log:
+                current_log = existing_log
+                current_log.write({'state': 'processing', 'started_at': started_at})
+            else:
+                current_log = ReqLog.create(log_vals)
+        except Exception as e:
+            # Handle DB UniqueViolation safely
+            return self._json_response({'success': False, 'error': 'Conflict creating request log', 'correlation_id': correlation_id}, status=409)
+
+        # 4. Delegate to CRM Intake Service
+        try:
+            integration_context = {
+                'idempotency_key': idempotency_key,
+                'correlation_id': correlation_id,
+                'client_name': client.name
+            }
+            
+            # Narrow Sudo Boundary
+            service = request.env['8848.crm.intake.service'].sudo()
+            result = service.process_enquiry(payload, integration_context)
+            
+            if result.get('success'):
+                response_data = {
+                    'success': True,
+                    'reference': result.get('reference'),
+                    'status': result.get('status'),
+                    'correlation_id': correlation_id,
+                    'message': 'Franchise enquiry received.'
+                }
+                http_status = result.get('http_status', 201)
+                
+                # Update Log
+                current_log.write({
+                    'state': 'success',
+                    'response_status': http_status,
+                    'safe_response_payload': json.dumps(response_data),
+                    'target_reference': result.get('reference'),
+                    'completed_at': datetime.datetime.now()
+                })
+                
+                return self._json_response(response_data, status=http_status)
+            else:
+                # Validation error from service
+                error_msg = result.get('error', 'Validation failed')
+                http_status = result.get('status', 422)
+                
+                current_log.write({
+                    'state': 'error',
+                    'response_status': http_status,
+                    'safe_error_message': error_msg,
+                    'completed_at': datetime.datetime.now()
+                })
+                return self._json_response({'success': False, 'error': error_msg, 'correlation_id': correlation_id}, status=http_status)
+                
+        except Exception as e:
+            _logger.error(f"CRM Service Error: {str(e)}")
+            current_log.write({
+                'state': 'error',
+                'response_status': 500,
+                'safe_error_message': 'Internal Server Error',
+                'completed_at': datetime.datetime.now()
+            })
+            return self._json_response({'success': False, 'error': 'Internal Server Error', 'correlation_id': correlation_id}, status=500)
 
     def _json_response(self, data, status=200):
         body = json.dumps(data)
