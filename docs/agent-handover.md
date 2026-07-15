@@ -26,4 +26,5 @@
   - **Batch W2**: COMPLETED (Definition, steps, transitions and instance engine).
   - **Batch W3**: COMPLETED (Activities, approvals, logs and server-side permission checks).
   - **Batch W4**: COMPLETED (Events, idempotency, escalation and scheduled actions).
-  - **Batch W5**: PENDING (Native views and menus).
+  - **Batch W5**: COMPLETED (Native views and menus).
+  - **Batch W6**: PENDING (Franchise approval proof of concept).
