@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 
+            8848_SECURITY GROUP HIERARCHY
+            =============================
+            - Manager groups imply their respective User groups.
+            - CEO implies GM.
+            - NO GROUP automatically implies IT or System Administration access.
+        -->
+
+        <!-- ========================= -->
+        <!-- EXECUTIVE                 -->
+        <!-- ========================= -->
+        <record id="group_8848_gm" model="res.groups">
+            <field name="name">General Manager</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Broad operational management access.</field>
+        </record>
+
+        <record id="group_8848_ceo" model="res.groups">
+            <field name="name">CEO</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('8848_security.group_8848_gm'))]"/>
+            <field name="comment">Full legitimate access to all business records.</field>
+        </record>
+
+        <!-- ========================= -->
+        <!-- OPERATIONS                -->
+        <!-- ========================= -->
+        <record id="group_8848_ops_user" model="res.groups">
+            <field name="name">Operations User</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_8848_ops_manager" model="res.groups">
+            <field name="name">Operations Manager</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('8848_security.group_8848_ops_user'))]"/>
+        </record>
+
+        <!-- ========================= -->
+        <!-- FACTORY                   -->
+        <!-- ========================= -->
+        <record id="group_8848_factory_user" model="res.groups">
+            <field name="name">Factory User</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_8848_factory_manager" model="res.groups">
+            <field name="name">Factory Manager</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('8848_security.group_8848_factory_user'))]"/>
+        </record>
+
+        <!-- ========================= -->
+        <!-- ACCOUNTS                  -->
+        <!-- ========================= -->
+        <record id="group_8848_acc_user" model="res.groups">
+            <field name="name">Accounts User</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_8848_acc_manager" model="res.groups">
+            <field name="name">Accounts Manager</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('8848_security.group_8848_acc_user'))]"/>
+        </record>
+
+        <!-- ========================= -->
+        <!-- COMPLIANCE                -->
+        <!-- ========================= -->
+        <record id="group_8848_comp_user" model="res.groups">
+            <field name="name">Compliance User</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_8848_comp_manager" model="res.groups">
+            <field name="name">Compliance Manager</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('8848_security.group_8848_comp_user'))]"/>
+        </record>
+
+        <!-- ========================= -->
+        <!-- IT                        -->
+        <!-- ========================= -->
+        <record id="group_8848_it_user" model="res.groups">
+            <field name="name">IT User</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_8848_it_manager" model="res.groups">
+            <field name="name">IT Manager</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('8848_security.group_8848_it_user'))]"/>
+        </record>
+
+        <!-- ========================= -->
+        <!-- MARKETING                 -->
+        <!-- ========================= -->
+        <record id="group_8848_mkt_user" model="res.groups">
+            <field name="name">Marketing User</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_8848_mkt_manager" model="res.groups">
+            <field name="name">Marketing Manager</field>
+            <field name="category_id" ref="module_category_8848_connect"/>
+            <field name="implied_ids" eval="[(4, ref('8848_security.group_8848_mkt_user'))]"/>
+        </record>
+    </data>
+</odoo>
