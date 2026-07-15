@@ -1,26 +1,28 @@
-# 8848 Business Suite — staging/production stack (Milestone 0 template)
-# Approved blueprint: Docker Compose on Ubuntu LTS VPS, nginx on the host.
-# Copy .env.example to .env and fill secrets before `docker compose up -d`.
-# NOT used for local development (local stays native per Milestone 0 scope).
+# 8848 Business Suite — Production Stack (Milestone 1.5)
+# Docker Compose on Ubuntu LTS VPS, Nginx on the host.
 
 services:
   db:
-    image: postgres:16
+    image: postgres:16-alpine
+    container_name: 8848_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: postgres
+      POSTGRES_DB: ${DB_NAME:-postgres}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - internal_net
 
   odoo:
     image: odoo:${ODOO_IMAGE_TAG:-19}
+    container_name: 8848_odoo
     restart: unless-stopped
     depends_on:
       db:
@@ -37,8 +39,14 @@ services:
       - ../8848-connect-addons:/mnt/extra-addons:ro
       - ./odoo.conf.rendered:/etc/odoo/odoo.conf:ro
       - odoo-logs:/var/log/odoo
+    networks:
+      - internal_net
 
 volumes:
   pgdata:
   odoo-filestore:
   odoo-logs:
+
+networks:
+  internal_net:
+    driver: bridge
