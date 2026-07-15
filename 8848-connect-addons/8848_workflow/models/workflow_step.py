@@ -2,6 +2,7 @@ from odoo import api, fields, models
 
 class WorkflowStep(models.Model):
     _name = '8848.workflow.step'
+    _table = 'connect_workflow_step'
     _description = 'Workflow Step'
     _rec_name = 'name'
     _order = 'sequence, id'

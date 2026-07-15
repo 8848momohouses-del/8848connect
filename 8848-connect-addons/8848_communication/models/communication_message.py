@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class CommunicationMessage(models.Model):
     _name = '8848.communication.message'
+    _table = 'connect_communication_message'
     _description = 'Communication Message Queue'
     _order = 'scheduled_date desc, id desc'
 

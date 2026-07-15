@@ -2,6 +2,7 @@ from odoo import api, fields, models
 
 class WorkflowLog(models.Model):
     _name = '8848.workflow.log'
+    _table = 'connect_workflow_log'
     _description = 'Workflow Audit Log'
     _order = 'timestamp desc, id desc'
 

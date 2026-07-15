@@ -5,6 +5,7 @@ _logger = logging.getLogger(__name__)
 
 class CrmIntakeService(models.AbstractModel):
     _name = '8848.crm.intake.service'
+    _table = 'connect_crm_intake_service'
     _description = 'CRM Intake Service Boundary'
 
     @api.model

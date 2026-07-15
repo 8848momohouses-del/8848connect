@@ -3,6 +3,7 @@ from odoo.exceptions import ValidationError
 
 class WorkflowActionWizard(models.TransientModel):
     _name = '8848.workflow.action.wizard'
+    _table = 'connect_workflow_action_wizard'
     _description = 'Workflow Action Wizard'
 
     instance_id = fields.Many2one('8848.workflow.instance', string='Workflow Instance', required=True)

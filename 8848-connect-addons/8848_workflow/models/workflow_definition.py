@@ -3,6 +3,7 @@ from odoo.exceptions import ValidationError
 
 class WorkflowDefinition(models.Model):
     _name = '8848.workflow.definition'
+    _table = 'connect_workflow_definition'
     _description = 'Workflow Definition'
     _rec_name = 'name'
     _order = 'sequence, id'

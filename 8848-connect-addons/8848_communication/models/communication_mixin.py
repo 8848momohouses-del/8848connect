@@ -3,6 +3,7 @@ from jinja2 import Environment
 
 class CommunicationMixin(models.AbstractModel):
     _name = '8848.communication.mixin'
+    _table = 'connect_communication_mixin'
     _description = 'Communication Hub Integration Mixin'
 
     def send_communication(self, template_code, channel_code=None, partner_id=None, scheduled_date=None):

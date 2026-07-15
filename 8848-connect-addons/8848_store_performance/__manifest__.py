@@ -1,4 +1,5 @@
 {
+    'author': '8848 Momo House',
     'name': '8848 Connect - Store Performance',
     'version': '1.1',
     'category': 'Hidden',

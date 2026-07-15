@@ -2,6 +2,7 @@ from odoo import api, fields, models
 
 class ApiRequestLog(models.Model):
     _name = '8848.api.request.log'
+    _table = 'connect_api_request_log'
     _description = 'API Request Audit Log'
     _order = 'started_at desc'
 

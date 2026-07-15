@@ -3,6 +3,7 @@ import uuid
 
 class ApiClient(models.Model):
     _name = '8848.api.client'
+    _table = 'connect_api_client'
     _description = 'API Client Credentials'
 
     name = fields.Char(string='Client Name', required=True, help='e.g., WordPress Gravity Forms')

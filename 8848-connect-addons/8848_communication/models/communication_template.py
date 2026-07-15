@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class CommunicationTemplate(models.Model):
     _name = '8848.communication.template'
+    _table = 'connect_communication_template'
     _description = 'Communication Template'
     _inherit = ['mail.thread']
 

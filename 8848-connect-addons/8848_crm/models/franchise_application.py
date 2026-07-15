@@ -2,6 +2,7 @@ from odoo import api, fields, models
 
 class FranchiseApplication(models.Model):
     _name = '8848.franchise.application'
+    _table = 'connect_franchise_application'
     _description = 'Franchise Application Details'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 

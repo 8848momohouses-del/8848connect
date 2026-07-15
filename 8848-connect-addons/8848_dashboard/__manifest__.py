@@ -1,4 +1,5 @@
 {
+    'author': '8848 Momo House',
     'name': '8848 Connect - Admin Dashboard',
     'version': '1.0',
     'category': 'Hidden',

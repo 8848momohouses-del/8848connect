@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class CommunicationChannel(models.Model):
     _name = '8848.communication.channel'
+    _table = 'connect_communication_channel'
     _description = 'Communication Channel'
     _order = 'sequence, id'
 
