@@ -116,9 +116,74 @@ class CrmLead(models.Model):
             lead = self.create(lead_vals)
             lead.message_post(body=f"New Franchise Enquiry received via Gateway. External ID: {external_entry_id}")
 
+        lead._assign_franchise_lead()
+        lead._create_followup_activity('Follow up on new franchise enquiry', delay_days=1)
+
         return {
             'success': True,
             'reference': lead.enquiry_reference,
             'lead_id': lead.id,
             'status': 'updated' if existing_lead else 'created'
         }
+
+    def _assign_franchise_lead(self):
+        """Assigns lead based on configuration settings."""
+        self.ensure_one()
+        if not self.user_id:
+            ICP = self.env['ir.config_parameter'].sudo()
+            default_user_id = int(ICP.get_param('8848_crm.default_user_id', 0))
+            default_team_id = int(ICP.get_param('8848_crm.default_team_id', 0))
+            
+            if default_user_id:
+                self.user_id = default_user_id
+            if default_team_id:
+                self.team_id = default_team_id
+
+    def _create_followup_activity(self, summary, delay_days=1):
+        """Creates a follow-up activity for the assigned user."""
+        self.ensure_one()
+        
+        # Don't create duplicate activities of the same summary
+        existing = self.env['mail.activity'].search([
+            ('res_model', '=', self._name),
+            ('res_id', '=', self.id),
+            ('summary', '=', summary)
+        ])
+        if existing:
+            return
+
+        date_deadline = fields.Date.context_today(self) + fields.Datetime.timedelta(days=delay_days)
+        self.env['mail.activity'].create({
+            'res_model_id': self.env.ref('crm.model_crm_lead').id,
+            'res_id': self.id,
+            'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+            'summary': summary,
+            'user_id': self.user_id.id or self.env.uid,
+            'date_deadline': date_deadline,
+        })
+
+    def recalculate_franchise_score(self):
+        """Calculates lead score based on configured rules or application data."""
+        for lead in self:
+            score = 0
+            app = lead.active_application_id
+            if app:
+                # Basic mock scoring rules for MVP
+                if app.business_experience:
+                    score += 20
+                if app.hospitality_experience:
+                    score += 20
+                if app.investment_available > 500000:
+                    score += 40
+                elif app.investment_available > 250000:
+                    score += 20
+                if not app.finance_required:
+                    score += 10
+            
+            # Additional points for general completeness
+            if lead.mobile:
+                score += 5
+            if lead.franchise_territory_interest:
+                score += 5
+                
+            lead.franchise_score = score
