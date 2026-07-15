@@ -11,7 +11,7 @@ class CommunicationTemplate(models.Model):
     code = fields.Char(string='Template Code', required=True, tracking=True, copy=False)
     
     # We reference Odoo's ir.model directly to know what we are templating
-    model_id = fields.Many2one('ir.model', string='Applies To', required=True, tracking=True)
+    model_id = fields.Many2one('ir.model', string='Applies To', required=True, tracking=True, ondelete='cascade')
     model = fields.Char(related='model_id.model', string='Related Document Model', store=True, readonly=True)
 
     subject = fields.Char(string='Subject / Title', translate=True, help='Subject for Emails, Title for Portal notifications. Supports Jinja2 syntax.')
