@@ -98,3 +98,8 @@ class ResPartner(models.Model):
         """Starts the Franchise Approval Workflow"""
         for partner in self:
             partner.action_start_workflow('FRANCHISE-APV')
+
+    def action_send_welcome_message(self):
+        """Proof of concept: dispatches the WELCOME-FRANCHISE template."""
+        for partner in self:
+            partner.send_communication('WELCOME-FRANCHISE', partner_id=partner)

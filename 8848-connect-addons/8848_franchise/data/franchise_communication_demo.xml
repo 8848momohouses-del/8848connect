@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Seed basic channels -->
+        <record id="comm_channel_email" model="8848.communication.channel">
+            <field name="name">Email</field>
+            <field name="code">email</field>
+        </record>
+        <record id="comm_channel_internal" model="8848.communication.channel">
+            <field name="name">Internal Note</field>
+            <field name="code">internal</field>
+        </record>
+
+        <!-- Demo Template -->
+        <record id="demo_template_welcome_franchise" model="8848.communication.template">
+            <field name="name">Welcome Franchise</field>
+            <field name="code">WELCOME-FRANCHISE</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="subject">Welcome to 8848 Momo House, {{ object.name }}!</field>
+            <field name="body_html"><![CDATA[
+                <p>Hello {{ object.name }},</p>
+                <p>Congratulations! Your franchise application for territory <strong>{{ object.territory }}</strong> has been approved.</p>
+                <p>We are thrilled to welcome you to the 8848 Momo House family.</p>
+            ]]></field>
+            <field name="body_text">Welcome to 8848 Momo House, {{ object.name }}! Your franchise application is approved.</field>
+            <field name="channel_ids" eval="[(6, 0, [ref('comm_channel_email'), ref('comm_channel_internal')])]"/>
+        </record>
+    </data>
+</odoo>

@@ -11,6 +11,7 @@
                 <xpath expr="//sheet" position="before">
                     <header invisible="not is_franchise">
                         <button name="action_start_franchise_approval" type="object" string="Start Approval Process" class="oe_highlight" invisible="franchise_approved"/>
+                        <button name="action_send_welcome_message" type="object" string="Send Welcome Message" class="btn-secondary" invisible="not franchise_approved"/>
                         <field name="franchise_stage_id" widget="statusbar"
                                options="{'clickable': '1', 'fold_field': 'fold'}"/>
                     </header>
