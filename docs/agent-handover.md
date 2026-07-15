@@ -6,8 +6,8 @@
 - **Last Completed Work:** Implemented Milestone 5 (API Gateway) including strictly bounded CRM intake service, exact canonical HMAC auth, and idempotency protection.
 - **Merge Commit:** Ready for merge to main.
 - **Validation Executed:**
-  - `HttpCase` automated tests in `test_api_auth.py` and `test_api_intake.py` passed.
-  - Strict security policy: No unhashed secrets stored in the DB, no direct `sudo` on unrestricted ORM models from the controller.
+  - `HttpCase` automated tests in `test_api_auth.py` and `test_api_intake.py` cover idempotency, 1MB payload limits, and invalid HMACs.
+  - Final integration and security verification successfully completed (refer to Milestone 5 Verification Report).
 - **Known Technical Debt:**
   - Missing author keys in some custom modules.
   - Store Performance records lack lifecycle state (deletion unconditionally blocked).
