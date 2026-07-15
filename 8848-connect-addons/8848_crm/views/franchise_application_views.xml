@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_franchise_application_form" model="ir.ui.view">
+        <field name="name">8848.franchise.application.form</field>
+        <field name="model">8848.franchise.application</field>
+        <field name="arch" type="xml">
+            <form string="Franchise Application">
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,submitted,review,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Linking">
+                            <field name="lead_id"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group string="Metadata">
+                            <field name="version"/>
+                            <field name="submission_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Financials">
+                            <group>
+                                <field name="total_assets"/>
+                                <field name="investment_available"/>
+                                <field name="finance_required"/>
+                            </group>
+                        </page>
+                        <page string="Experience &amp; Partners">
+                            <group>
+                                <field name="hospitality_experience"/>
+                                <field name="business_experience"/>
+                                <field name="partnership_details"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_franchise_application_list" model="ir.ui.view">
+        <field name="name">8848.franchise.application.list</field>
+        <field name="model">8848.franchise.application</field>
+        <field name="arch" type="xml">
+            <list string="Applications">
+                <field name="name"/>
+                <field name="lead_id"/>
+                <field name="version"/>
+                <field name="investment_available"/>
+                <field name="status" widget="badge" 
+                       decoration-info="status == 'submitted'" 
+                       decoration-warning="status == 'review'"
+                       decoration-success="status == 'approved'"
+                       decoration-danger="status == 'rejected'"/>
+                <field name="submission_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_franchise_application" model="ir.actions.act_window">
+        <field name="name">Franchise Applications</field>
+        <field name="res_model">8848.franchise.application</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu for standalone viewing of applications -->
+    <menuitem id="menu_franchise_application"
+              name="Applications"
+              parent="crm.crm_menu_sales"
+              action="action_franchise_application"
+              sequence="20"/>
+</odoo>

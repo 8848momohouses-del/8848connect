@@ -21,6 +21,8 @@
         'security/ir.model.access.csv',
         'data/crm_sequence.xml',
         'views/res_config_settings_views.xml',
+        'views/crm_lead_views.xml',
+        'views/franchise_application_views.xml',
     ],
     'installable': True,
     'application': False,
