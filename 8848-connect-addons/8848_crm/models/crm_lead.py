@@ -43,3 +43,82 @@ class CrmLead(models.Model):
                 lead.franchise_score_category = 'warm'
             else:
                 lead.franchise_score_category = 'cold'
+
+    @api.model
+    def create_or_update_franchise_enquiry(self, payload):
+        """
+        CRM Intake Service for Franchise Enquiries.
+        Returns a stable internal reference and lead ID.
+        """
+        # 1. Validate Mandatory
+        if not payload.get('contact_name'):
+            return {'success': False, 'error': 'contact_name is required'}
+        if not payload.get('email_from'):
+            return {'success': False, 'error': 'email_from is required'}
+
+        # 2. Normalize
+        email_from = payload['email_from'].strip().lower()
+        mobile = payload.get('mobile', '').strip()
+        external_entry_id = payload.get('external_entry_id')
+
+        # 3. Idempotency Check
+        if external_entry_id:
+            existing_by_ext = self.search([('external_entry_id', '=', external_entry_id)], limit=1)
+            if existing_by_ext:
+                return {'success': True, 'reference': existing_by_ext.enquiry_reference, 'lead_id': existing_by_ext.id, 'status': 'idempotent'}
+
+        # 4. Duplicate Check
+        existing_lead = False
+        territory_interest = payload.get('franchise_territory_interest')
+        
+        # Check for open leads with same email and territory
+        domain = [('email_from', '=', email_from), ('type', '=', 'opportunity')]
+        if territory_interest:
+            domain.append(('franchise_territory_interest', '=', territory_interest))
+            
+        open_leads = self.search(domain)
+        if open_leads:
+            existing_lead = open_leads[0]
+
+        # 5. Partner Check
+        existing_partner = self.env['res.partner'].search([
+            ('email', '=', email_from), 
+            ('is_franchise', '=', True)
+        ], limit=1)
+
+        # 6. Prepare Values
+        lead_vals = {
+            'name': f"Franchise Enquiry: {payload.get('contact_name')} - {territory_interest or 'General'}",
+            'contact_name': payload['contact_name'],
+            'email_from': email_from,
+            'mobile': mobile,
+            'franchise_territory_interest': territory_interest,
+            'external_entry_id': external_entry_id,
+            'type': 'opportunity',
+            'description': payload.get('message', ''),
+            'marketing_consent': payload.get('marketing_consent', False),
+            'privacy_consent': payload.get('privacy_consent', False),
+        }
+
+        if existing_partner:
+            lead_vals['partner_id'] = existing_partner.id
+            lead_vals['name'] = f"Expansion Enquiry: {existing_partner.name} - {territory_interest or 'General'}"
+
+        if existing_lead:
+            # Update existing lead
+            existing_lead.write(lead_vals)
+            existing_lead.message_post(body=f"Received updated enquiry for territory {territory_interest}. External ID: {external_entry_id}")
+            lead = existing_lead
+        else:
+            # Generate Sequence
+            lead_vals['enquiry_reference'] = self.env['ir.sequence'].next_by_code('8848.franchise.enquiry') or 'NEW'
+            # Create new lead
+            lead = self.create(lead_vals)
+            lead.message_post(body=f"New Franchise Enquiry received via Gateway. External ID: {external_entry_id}")
+
+        return {
+            'success': True,
+            'reference': lead.enquiry_reference,
+            'lead_id': lead.id,
+            'status': 'updated' if existing_lead else 'created'
+        }
