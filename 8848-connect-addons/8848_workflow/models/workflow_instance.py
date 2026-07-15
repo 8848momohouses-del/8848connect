@@ -18,6 +18,10 @@ class WorkflowInstance(models.Model):
     active = fields.Boolean(default=True)
     
     current_step_id = fields.Many2one('8848.workflow.step', string='Current Step', tracking=True)
+    entered_current_step_at = fields.Datetime(string='Entered Step At', tracking=True)
+    escalation_triggered = fields.Boolean(string='Escalation Triggered', default=False)
+    
+    correlation_id = fields.Char(string='Correlation ID', index=True, tracking=True, help="Idempotency key to prevent duplicate instantiations")
     
     state = fields.Selection([
         ('in_progress', 'In Progress'),
@@ -62,6 +66,8 @@ class WorkflowInstance(models.Model):
             
             # Start workflow
             instance.current_step_id = instance.workflow_id.initial_step_id
+            instance.entered_current_step_at = fields.Datetime.now()
+            instance.escalation_triggered = False
             
             # Execute destination step entry action
             if instance.current_step_id.entry_action_id:
@@ -175,6 +181,8 @@ class WorkflowInstance(models.Model):
 
         # Move to destination
         self.current_step_id = transition.destination_step_id
+        self.entered_current_step_at = fields.Datetime.now()
+        self.escalation_triggered = False
         
         # Create activities for destination step
         self._create_step_activities(self.current_step_id)
@@ -204,3 +212,63 @@ class WorkflowInstance(models.Model):
             'destination_step_id': transition.destination_step_id.id,
             'comment': _("Transitioned via %s") % transition.name
         })
+
+    @api.model
+    def _cron_process_automations_and_slas(self):
+        """
+        Runs periodically via cron to evaluate automatic transitions and SLAs on active workflow instances.
+        """
+        active_instances = self.search([('state', '=', 'in_progress'), ('active', '=', True)])
+        
+        for instance in active_instances:
+            # 1. Check Automatic Transitions
+            automatic_transitions = self.env['8848.workflow.transition'].search([
+                ('source_step_id', '=', instance.current_step_id.id),
+                ('is_automatic', '=', True)
+            ])
+            
+            record = None
+            for transition in automatic_transitions:
+                if not record:
+                    # Get record lazily only if there is an automatic transition
+                    try:
+                        record = instance._get_business_record()
+                    except Exception:
+                        break # Record might have been deleted
+                        
+                if transition._evaluate_condition(record):
+                    try:
+                        instance.execute_transition(transition)
+                    except Exception as e:
+                        import logging
+                        _logger = logging.getLogger(__name__)
+                        _logger.error("Cron failed to execute automatic transition %s on instance %s: %s", transition.name, instance.id, e)
+                    break # Only execute one automatic transition per cron tick
+            
+            # 2. Check SLAs and Escalations
+            # If the instance was transitioned above, current_step_id has changed, so we evaluate SLA for the NEW step or the OLD step if it didn't transition.
+            if instance.state == 'in_progress' and not instance.escalation_triggered and instance.current_step_id.sla_hours > 0 and instance.entered_current_step_at:
+                from datetime import timedelta
+                sla_deadline = instance.entered_current_step_at + timedelta(hours=instance.current_step_id.sla_hours)
+                
+                if fields.Datetime.now() > sla_deadline:
+                    # SLA Breached!
+                    instance.escalation_triggered = True
+                    if instance.current_step_id.escalation_action_id:
+                        try:
+                            instance.current_step_id.escalation_action_id.with_context(
+                                active_model=instance.res_model, 
+                                active_id=instance.res_id,
+                                workflow_instance_id=instance.id
+                            ).sudo().run()
+                        except Exception as e:
+                            import logging
+                            _logger = logging.getLogger(__name__)
+                            _logger.error("Escalation action failed on step %s: %s", instance.current_step_id.name, e)
+                    
+                    self.env['8848.workflow.log'].sudo().create({
+                        'instance_id': instance.id,
+                        'action': 'escalated',
+                        'result': 'escalated',
+                        'comment': _("SLA Breached on step %s. Escalation triggered.") % instance.current_step_id.name
+                    })

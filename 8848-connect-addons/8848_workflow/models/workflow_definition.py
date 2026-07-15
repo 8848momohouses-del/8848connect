@@ -31,7 +31,7 @@ class WorkflowDefinition(models.Model):
         ('code_unique', 'unique(code, company_id)', 'Workflow code must be unique per company!')
     ]
 
-    def action_instantiate(self, res_model, res_id):
+    def action_instantiate(self, res_model, res_id, correlation_id=None):
         """
         Instantiates this workflow definition for a specific business record.
         """
@@ -42,6 +42,11 @@ class WorkflowDefinition(models.Model):
             raise ValidationError(_("Workflow '%s' is designed for model %s, not %s.") % (self.name, self.target_model_id.model, res_model))
             
         Instance = self.env['8848.workflow.instance']
+        
+        if correlation_id:
+            existing = Instance.search([('correlation_id', '=', correlation_id)], limit=1)
+            if existing:
+                return existing # Idempotency check: return existing if found
         
         # Check active instances if multiple not allowed
         if not self.allow_multiple_active_instances:
@@ -61,6 +66,7 @@ class WorkflowDefinition(models.Model):
             'workflow_id': self.id,
             'res_model': res_model,
             'res_id': res_id,
+            'correlation_id': correlation_id,
         })
         instance.action_start()
         

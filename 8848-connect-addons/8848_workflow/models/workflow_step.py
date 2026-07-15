@@ -24,6 +24,7 @@ class WorkflowStep(models.Model):
     
     entry_action_id = fields.Many2one('ir.actions.server', string='Entry Action', help="Server action executed when entering this step")
     exit_action_id = fields.Many2one('ir.actions.server', string='Exit Action', help="Server action executed when leaving this step")
+    escalation_action_id = fields.Many2one('ir.actions.server', string='Escalation Action', help="Server action executed when SLA is breached")
 
     _sql_constraints = [
         ('code_workflow_unique', 'unique(code, workflow_id)', 'Step code must be unique per workflow!')
