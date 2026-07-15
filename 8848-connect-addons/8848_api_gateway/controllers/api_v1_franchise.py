@@ -26,7 +26,8 @@ class ApiV1FranchiseController(http.Controller):
             
         # 2. Parse & Validate JSON payload
         raw_body = request.httprequest.get_data()
-        if len(raw_body) > 10 * 1024 * 1024:
+        # Max 1MB payload for franchise inquiries
+        if len(raw_body) > 1 * 1024 * 1024:
             return self._json_response({'success': False, 'error': 'Payload too large', 'correlation_id': correlation_id}, status=413)
 
         try:

@@ -87,3 +87,12 @@ class TestApiIntake(HttpCase):
         
         self.assertEqual(response.status_code, 422)
         self.assertTrue('required' in response.json().get('error'))
+
+    def test_payload_too_large(self):
+        # Generate a large string > 1MB
+        large_string = 'A' * (1 * 1024 * 1024 + 10)
+        body = {'contact_name': 'Large', 'email_from': 'large@8848.com', 'message': large_string}
+        headers = self._generate_headers('POST', self.url, body)
+        response = self.url_open(self.url, data=json.dumps(body), headers=headers)
+        
+        self.assertEqual(response.status_code, 413)
