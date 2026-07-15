@@ -5,7 +5,7 @@
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="crm.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//block[@name='lead_generation_setting_container']" position="after">
+            <xpath expr="//app[@name='crm']" position="inside">
                 <block title="8848 Franchise CRM" name="8848_franchise_crm_setting_container">
                     <setting id="franchise_default_team" title="Default Franchise Sales Team" help="Assigned to new incoming franchise enquiries.">
                         <field name="franchise_default_team_id"/>
