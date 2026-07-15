@@ -10,7 +10,6 @@
     'data': [
         'security/security_categories.xml',
         'security/security_groups.xml',
-        'security/ir.model.access.csv',
     ],
     'installable': True,
     'application': False,
