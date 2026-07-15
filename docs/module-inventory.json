@@ -1,0 +1,75 @@
+{
+  "baseline_tag": "v0-baseline",
+  "database": "Momohouse",
+  "generated": "2026-07-15",
+  "modules": {
+    "8848_core_branding": {
+      "version": "19.0.1.0",
+      "state": "installed"
+    },
+    "8848_dashboard": {
+      "version": "19.0.1.0",
+      "state": "installed"
+    },
+    "8848_delivery": {
+      "version": "?",
+      "state": "uninstalled"
+    },
+    "8848_driver": {
+      "version": "?",
+      "state": "uninstalled"
+    },
+    "8848_factory": {
+      "version": "19.0.1.0",
+      "state": "installed"
+    },
+    "8848_franchise": {
+      "version": "19.0.1.1",
+      "state": "installed"
+    },
+    "8848_glass_skin": {
+      "version": "19.0.1.0.0",
+      "state": "installed"
+    },
+    "8848_inventory": {
+      "version": "19.0.1.0",
+      "state": "installed"
+    },
+    "8848_marketing_fee": {
+      "version": "19.0.1.1",
+      "state": "installed"
+    },
+    "8848_portal": {
+      "version": "19.0.1.0",
+      "state": "installed"
+    },
+    "8848_quality": {
+      "version": "19.0.1.0",
+      "state": "installed"
+    },
+    "8848_royalty": {
+      "version": "19.0.1.1",
+      "state": "installed"
+    },
+    "8848_store_performance": {
+      "version": "19.0.1.1",
+      "state": "installed"
+    },
+    "8848_supplier": {
+      "version": "19.0.1.0",
+      "state": "installed"
+    },
+    "8848_warehouse": {
+      "version": "19.0.1.0",
+      "state": "installed"
+    },
+    "sign_oca": {
+      "version": "19.0.1.0.0",
+      "state": "installed"
+    },
+    "theme_liquid_glass": {
+      "version": "19.0.1.0.0",
+      "state": "installed"
+    }
+  }
+}
