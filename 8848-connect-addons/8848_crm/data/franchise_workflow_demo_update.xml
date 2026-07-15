@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
         <!-- Update workflow definition with initial step -->
-        <record id="demo_workflow_franchise" model="8848.workflow.definition">
+        <record id="8848_crm.demo_workflow_franchise" model="8848.workflow.definition">
             <field name="initial_step_id" ref="demo_step_franchise_draft"/>
         </record>
 
