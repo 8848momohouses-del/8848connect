@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_store_performance,store.performance,model_8848_store_performance,base.group_user,1,1,1,1
+access_store_performance,store.performance,model_8848_store_performance,8848_security.group_8848_ops_manager,1,1,1,1
+access_store_performance_read,store.performance_read,model_8848_store_performance,base.group_user,1,0,0,0

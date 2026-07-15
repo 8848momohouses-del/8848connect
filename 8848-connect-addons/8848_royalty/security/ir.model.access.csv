@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_royalty_statement_user,royalty_statement.user,model_8848_royalty_statement,base.group_user,1,1,1,1
+access_royalty_statement_user,royalty_statement.user,model_8848_royalty_statement,8848_security.group_8848_acc_manager,1,1,1,1
+access_royalty_statement_read,royalty_statement.read,model_8848_royalty_statement,base.group_user,1,0,0,0
+access_royalty_statement_acc_user,royalty_statement.acc_user,model_8848_royalty_statement,8848_security.group_8848_acc_user,1,1,1,0
 access_royalty_statement_admin,royalty_statement.admin,model_8848_royalty_statement,base.group_system,1,1,1,1

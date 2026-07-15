@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_franchise_stage_user,franchise.stage.user,model_8848_franchise_stage,base.group_user,1,0,0,0
+access_franchise_stage_ops_manager,franchise.stage.ops_mgr,model_8848_franchise_stage,8848_security.group_8848_ops_manager,1,1,1,1
 access_franchise_stage_admin,franchise.stage.admin,model_8848_franchise_stage,base.group_system,1,1,1,1

@@ -140,7 +140,7 @@ def check_dependencies(mod: pathlib.Path, manifest: dict,
 def check_foundation_purity(manifests: dict[str, dict]) -> None:
     core = manifests.get("8848_franchise")
     if core:
-        bad = [d for d in core.get("depends", []) if d.startswith("8848_")]
+        bad = [d for d in core.get("depends", []) if d.startswith("8848_") and d != "8848_security"]
         for dep in bad:
             errors.append(f"[layering] 8848_franchise (foundation) must not "
                           f"depend on {dep}")

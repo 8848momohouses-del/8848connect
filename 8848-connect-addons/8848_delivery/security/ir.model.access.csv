@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_delivery_route_user,delivery_route.user,model_8848_delivery_route,base.group_user,1,1,1,1
+access_delivery_route_user,delivery_route.user,model_8848_delivery_route,8848_security.group_8848_ops_manager,1,1,1,1
+access_delivery_route_read,delivery_route.read,model_8848_delivery_route,base.group_user,1,0,0,0
+access_delivery_route_ops_user,delivery_route.ops_user,model_8848_delivery_route,8848_security.group_8848_ops_user,1,1,1,0
 access_delivery_route_admin,delivery_route.admin,model_8848_delivery_route,base.group_system,1,1,1,1
