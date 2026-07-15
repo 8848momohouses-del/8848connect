@@ -19,6 +19,9 @@ sessions/
 filestore/
 .odoorc
 
+# --- Claude Code local settings (machine-specific) ---
+.claude/settings.local.json
+
 # --- OS / editor cruft ---
 .DS_Store
 *.swp
