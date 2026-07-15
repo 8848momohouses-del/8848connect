@@ -6,7 +6,8 @@
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='coach_id']" position="after">
+                <!-- v19: coach_id was removed from the employee form; anchor on Manager -->
+                <xpath expr="//field[@name='parent_id']" position="after">
                     <field name="is_driver"/>
                 </xpath>
             </field>
