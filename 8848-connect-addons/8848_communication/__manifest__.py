@@ -12,7 +12,7 @@
         - Full audit history per business record
     """,
     'author': '8848 Momo House',
-    'depends': ['base', 'mail', '8848_security'],
+    'depends': ['base', 'mail', 'sms', '8848_security'],
     'data': [
         'security/ir.model.access.csv',
         'data/communication_cron.xml',

@@ -89,17 +89,64 @@ class CommunicationMessage(models.Model):
             })
 
     def _dispatch_email(self):
-        """Stub for email dispatch. To be implemented in C3."""
-        pass
+        """Sends an email using Odoo's native mail.mail."""
+        if not self.partner_id or not self.partner_id.email:
+            raise ValueError("Recipient Partner must have an email address.")
+            
+        mail_values = {
+            'subject': self.subject,
+            'body_html': self.body or '',
+            'email_to': self.partner_id.email,
+            'recipient_ids': [(4, self.partner_id.id)],
+            'model': self.res_model,
+            'res_id': self.res_id,
+            'auto_delete': True,
+        }
+        mail = self.env['mail.mail'].sudo().create(mail_values)
+        mail.send()
+        self.mail_message_id = mail.mail_message_id.id
 
     def _dispatch_sms(self):
-        """Stub for sms dispatch. To be implemented in C3."""
-        pass
+        """Sends an SMS using Odoo's native sms.sms shell."""
+        if not self.partner_id or not self.partner_id.mobile:
+            raise ValueError("Recipient Partner must have a mobile number.")
+            
+        # We need the plain text body from the template, as self.body is HTML.
+        body_text = self.template_id.body_text if self.template_id else self.body
+        
+        sms_values = {
+            'partner_id': self.partner_id.id,
+            'number': self.partner_id.mobile,
+            'body': body_text or '',
+        }
+        sms = self.env['sms.sms'].sudo().create(sms_values)
+        sms.send()
 
     def _dispatch_portal(self):
-        """Stub for portal dispatch. To be implemented in C3."""
-        pass
+        """Posts a message to the record's chatter, visible to portal users."""
+        target_record = self.env[self.res_model].browse(self.res_id)
+        if hasattr(target_record, 'message_post'):
+            msg = target_record.message_post(
+                subject=self.subject,
+                body=self.body,
+                message_type='comment',
+                subtype_xmlid='mail.mt_comment',
+                partner_ids=[self.partner_id.id] if self.partner_id else []
+            )
+            self.mail_message_id = msg.id
+        else:
+            raise ValueError(f"Model {self.res_model} does not inherit mail.thread. Cannot dispatch portal message.")
         
     def _dispatch_internal(self):
-        """Stub for internal dispatch. To be implemented in C3."""
-        pass
+        """Posts an internal note to the record's chatter, invisible to portal."""
+        target_record = self.env[self.res_model].browse(self.res_id)
+        if hasattr(target_record, 'message_post'):
+            msg = target_record.message_post(
+                subject=self.subject,
+                body=self.body,
+                message_type='comment',
+                subtype_xmlid='mail.mt_note'
+            )
+            self.mail_message_id = msg.id
+        else:
+            raise ValueError(f"Model {self.res_model} does not inherit mail.thread. Cannot dispatch internal note.")
