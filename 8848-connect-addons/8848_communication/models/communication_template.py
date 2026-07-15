@@ -20,6 +20,7 @@ class CommunicationTemplate(models.Model):
 
     channel_ids = fields.Many2many(
         '8848.communication.channel',
+        relation='connect_comm_tmpl_channel_rel',
         string='Supported Channels',
         help='Channels this template is designed to be sent through.'
     )
