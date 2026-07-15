@@ -61,10 +61,9 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
         <field name="arch" type="xml">
-            <xpath expr="//filter[@name='unassigned']" position="after">
+            <xpath expr="//search" position="inside">
                 <filter string="Hot Franchise Leads" name="hot_franchise" domain="[('franchise_score_category', '=', 'hot')]"/>
-            </xpath>
-            <xpath expr="//filter[@name='salesperson']" position="after">
+                <separator/>
                 <filter string="Territory Interest" name="group_territory" context="{'group_by': 'franchise_territory_interest'}"/>
                 <filter string="Score Category" name="group_score_cat" context="{'group_by': 'franchise_score_category'}"/>
             </xpath>
