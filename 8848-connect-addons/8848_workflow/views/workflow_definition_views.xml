@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_8848_workflow_definition_tree" model="ir.ui.view">
+        <field name="name">8848.workflow.definition.tree</field>
+        <field name="model">8848.workflow.definition</field>
+        <field name="arch" type="xml">
+            <tree string="Workflow Definitions">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="target_model_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_8848_workflow_definition_form" model="ir.ui.view">
+        <field name="name">8848.workflow.definition.form</field>
+        <field name="model">8848.workflow.definition</field>
+        <field name="arch" type="xml">
+            <form string="Workflow Definition">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Workflow Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="target_model_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="initial_step_id"/>
+                            <field name="allow_multiple_active_instances"/>
+                            <field name="automatic_start"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Steps">
+                            <field name="step_ids" context="{'default_workflow_id': id}">
+                                <tree>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="step_type"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_8848_workflow_definition_search" model="ir.ui.view">
+        <field name="name">8848.workflow.definition.search</field>
+        <field name="model">8848.workflow.definition</field>
+        <field name="arch" type="xml">
+            <search string="Search Workflow Definitions">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="target_model_id"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_8848_workflow_definition" model="ir.actions.act_window">
+        <field name="name">Workflow Definitions</field>
+        <field name="res_model">8848.workflow.definition</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_8848_workflow_definition_search"/>
+    </record>
+
+    <menuitem id="menu_8848_workflow_def"
+              name="Definitions"
+              parent="menu_8848_workflow_config"
+              action="action_8848_workflow_definition"
+              sequence="10"/>
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_8848_workflow_step_form" model="ir.ui.view">
+        <field name="name">8848.workflow.step.form</field>
+        <field name="model">8848.workflow.step</field>
+        <field name="arch" type="xml">
+            <form string="Workflow Step">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Step Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="workflow_id" invisible="1"/>
+                            <field name="code"/>
+                            <field name="step_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="responsible_group_id"/>
+                            <field name="sla_hours"/>
+                        </group>
+                    </group>
+                    <group string="Automation Actions">
+                        <field name="entry_action_id"/>
+                        <field name="exit_action_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

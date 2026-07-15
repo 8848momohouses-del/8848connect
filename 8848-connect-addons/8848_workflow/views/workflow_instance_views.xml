@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_8848_workflow_instance_tree" model="ir.ui.view">
+        <field name="name">8848.workflow.instance.tree</field>
+        <field name="model">8848.workflow.instance</field>
+        <field name="arch" type="xml">
+            <tree string="Workflow Instances" decoration-info="state=='in_progress'" decoration-success="state=='completed'" decoration-muted="state=='cancelled'">
+                <field name="reference"/>
+                <field name="workflow_id"/>
+                <field name="res_model"/>
+                <field name="res_id"/>
+                <field name="current_step_id"/>
+                <field name="state" widget="badge"/>
+                <field name="started_at"/>
+                <field name="deadline"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_8848_workflow_instance_form" model="ir.ui.view">
+        <field name="name">8848.workflow.instance.form</field>
+        <field name="model">8848.workflow.instance</field>
+        <field name="arch" type="xml">
+            <form string="Workflow Instance" create="false" edit="false">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="in_progress,completed,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="reference"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="workflow_id"/>
+                            <field name="res_model"/>
+                            <field name="res_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="current_step_id"/>
+                            <field name="started_at"/>
+                            <field name="completed_at" invisible="state != 'completed'"/>
+                            <field name="deadline"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Logs">
+                            <field name="log_ids" readonly="1">
+                                <tree>
+                                    <field name="timestamp"/>
+                                    <field name="user_id"/>
+                                    <field name="action"/>
+                                    <field name="result"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_8848_workflow_instance_search" model="ir.ui.view">
+        <field name="name">8848.workflow.instance.search</field>
+        <field name="model">8848.workflow.instance</field>
+        <field name="arch" type="xml">
+            <search string="Search Instances">
+                <field name="reference"/>
+                <field name="workflow_id"/>
+                <field name="res_model"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Workflow" name="group_by_workflow" context="{'group_by':'workflow_id'}"/>
+                    <filter string="State" name="group_by_state" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_8848_workflow_instance" model="ir.actions.act_window">
+        <field name="name">Workflow Instances</field>
+        <field name="res_model">8848.workflow.instance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_8848_workflow_instance_search"/>
+        <field name="context">{'search_default_in_progress': 1}</field>
+    </record>
+
+    <menuitem id="menu_8848_workflow_instances_action"
+              name="Active Instances"
+              parent="menu_8848_workflow_instances"
+              action="action_8848_workflow_instance"
+              sequence="10"/>
+</odoo>

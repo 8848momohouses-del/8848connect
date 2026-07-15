@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_workflow_definition_system,workflow.definition.system,model_8848_workflow_definition,base.group_system,1,1,1,1
+access_workflow_definition_user,workflow.definition.user,model_8848_workflow_definition,base.group_user,1,0,0,0
+access_workflow_step_system,workflow.step.system,model_8848_workflow_step,base.group_system,1,1,1,1
+access_workflow_step_user,workflow.step.user,model_8848_workflow_step,base.group_user,1,0,0,0
+access_workflow_transition_system,workflow.transition.system,model_8848_workflow_transition,base.group_system,1,1,1,1
+access_workflow_transition_user,workflow.transition.user,model_8848_workflow_transition,base.group_user,1,0,0,0
+access_workflow_instance_system,workflow.instance.system,model_8848_workflow_instance,base.group_system,1,1,1,1
+access_workflow_instance_user,workflow.instance.user,model_8848_workflow_instance,base.group_user,1,0,0,0
+access_workflow_log_system,workflow.log.system,model_8848_workflow_log,base.group_system,1,1,1,1
+access_workflow_log_user,workflow.log.user,model_8848_workflow_log,base.group_user,1,0,0,0

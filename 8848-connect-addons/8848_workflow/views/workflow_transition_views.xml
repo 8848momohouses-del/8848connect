@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_8848_workflow_transition_tree" model="ir.ui.view">
+        <field name="name">8848.workflow.transition.tree</field>
+        <field name="model">8848.workflow.transition</field>
+        <field name="arch" type="xml">
+            <tree string="Workflow Transitions">
+                <field name="sequence" widget="handle"/>
+                <field name="workflow_id"/>
+                <field name="name"/>
+                <field name="source_step_id"/>
+                <field name="destination_step_id"/>
+                <field name="required_group_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_8848_workflow_transition_form" model="ir.ui.view">
+        <field name="name">8848.workflow.transition.form</field>
+        <field name="model">8848.workflow.transition</field>
+        <field name="arch" type="xml">
+            <form string="Workflow Transition">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Transition Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="workflow_id"/>
+                            <field name="source_step_id"/>
+                            <field name="destination_step_id"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="required_group_id"/>
+                            <field name="requires_comment"/>
+                            <field name="requires_attachment"/>
+                        </group>
+                    </group>
+                    <group string="Automation">
+                        <field name="is_automatic"/>
+                        <field name="condition_domain" invisible="not is_automatic"/>
+                        <field name="action_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_8848_workflow_transition" model="ir.actions.act_window">
+        <field name="name">Workflow Transitions</field>
+        <field name="res_model">8848.workflow.transition</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_8848_workflow_transitions"
+              name="Transitions"
+              parent="menu_8848_workflow_config"
+              action="action_8848_workflow_transition"
+              sequence="20"/>
+</odoo>

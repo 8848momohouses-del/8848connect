@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_8848_workflow_log_tree" model="ir.ui.view">
+        <field name="name">8848.workflow.log.tree</field>
+        <field name="model">8848.workflow.log</field>
+        <field name="arch" type="xml">
+            <tree string="Workflow Logs" create="false" edit="false" delete="false">
+                <field name="timestamp"/>
+                <field name="instance_id"/>
+                <field name="user_id"/>
+                <field name="action"/>
+                <field name="source_step_id"/>
+                <field name="destination_step_id"/>
+                <field name="result"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_8848_workflow_log_form" model="ir.ui.view">
+        <field name="name">8848.workflow.log.form</field>
+        <field name="model">8848.workflow.log</field>
+        <field name="arch" type="xml">
+            <form string="Workflow Log" create="false" edit="false" delete="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="instance_id"/>
+                            <field name="timestamp"/>
+                            <field name="user_id"/>
+                            <field name="action"/>
+                        </group>
+                        <group>
+                            <field name="source_step_id"/>
+                            <field name="destination_step_id"/>
+                            <field name="result"/>
+                            <field name="event_code"/>
+                            <field name="correlation_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Comment" invisible="not comment">
+                            <field name="comment"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_8848_workflow_log" model="ir.actions.act_window">
+        <field name="name">Audit Logs</field>
+        <field name="res_model">8848.workflow.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_8848_workflow_logs_action"
+              name="All Logs"
+              parent="menu_8848_workflow_logs"
+              action="action_8848_workflow_log"
+              sequence="10"/>
+</odoo>

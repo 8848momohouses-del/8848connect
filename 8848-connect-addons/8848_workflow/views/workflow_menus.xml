@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Top Level Menu -->
+        <menuitem id="menu_8848_workflow_root"
+                  name="Workflow Engine"
+                  web_icon="8848_workflow,static/description/icon.png"
+                  sequence="100"/>
+
+        <!-- Definitions Menu -->
+        <menuitem id="menu_8848_workflow_config"
+                  name="Configuration"
+                  parent="menu_8848_workflow_root"
+                  sequence="90"
+                  groups="base.group_system"/>
+
+        <!-- Active Instances Menu -->
+        <menuitem id="menu_8848_workflow_instances"
+                  name="Instances"
+                  parent="menu_8848_workflow_root"
+                  sequence="10"/>
+                  
+        <!-- Logs Menu -->
+        <menuitem id="menu_8848_workflow_logs"
+                  name="Audit Logs"
+                  parent="menu_8848_workflow_root"
+                  sequence="20"/>
+    </data>
+</odoo>
