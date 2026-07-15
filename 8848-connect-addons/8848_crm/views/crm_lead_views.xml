@@ -46,7 +46,7 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('oe_kanban_content')]" position="inside">
+            <xpath expr="//field[@name='tag_ids']" position="after">
                 <div t-if="record.franchise_score_category.raw_value">
                     <span t-attf-class="badge rounded-pill #{record.franchise_score_category.raw_value == 'hot' and 'text-bg-danger' or record.franchise_score_category.raw_value == 'warm' and 'text-bg-warning' or 'text-bg-info'}">
                         <field name="franchise_score_category"/>
