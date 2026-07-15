@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_communication_template_form" model="ir.ui.view">
+            <field name="name">8848.communication.template.form</field>
+            <field name="model">8848.communication.template</field>
+            <field name="arch" type="xml">
+                <form string="Communication Template">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" placeholder="Welcome Email"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <field name="model_id"/>
+                                <field name="model" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="channel_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Subject &amp; Headers">
+                                <group>
+                                    <field name="subject"/>
+                                </group>
+                            </page>
+                            <page string="HTML Body (Email / Portal)">
+                                <field name="body_html" widget="html" options="{'style-inline': true}"/>
+                            </page>
+                            <page string="Text Body (SMS)">
+                                <field name="body_text"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_communication_template_list" model="ir.ui.view">
+            <field name="name">8848.communication.template.list</field>
+            <field name="model">8848.communication.template</field>
+            <field name="arch" type="xml">
+                <list string="Communication Templates">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="model_id"/>
+                    <field name="channel_ids" widget="many2many_tags"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_communication_template" model="ir.actions.act_window">
+            <field name="name">Templates</field>
+            <field name="res_model">8848.communication.template</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem id="menu_communication_templates"
+                  name="Templates"
+                  parent="menu_communication_config"
+                  action="action_communication_template"
+                  sequence="20"/>
+    </data>
+</odoo>

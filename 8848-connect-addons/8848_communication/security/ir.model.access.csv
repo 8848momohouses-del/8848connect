@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_communication_channel_system,communication.channel.system,model_8848_communication_channel,base.group_system,1,1,1,1
+access_communication_channel_user,communication.channel.user,model_8848_communication_channel,base.group_user,1,0,0,0
+access_communication_template_system,communication.template.system,model_8848_communication_template,base.group_system,1,1,1,1
+access_communication_template_manager,communication.template.manager,model_8848_communication_template,base.group_erp_manager,1,1,1,1
+access_communication_template_user,communication.template.user,model_8848_communication_template,base.group_user,1,0,0,0
+access_communication_message_system,communication.message.system,model_8848_communication_message,base.group_system,1,1,1,1
+access_communication_message_user,communication.message.user,model_8848_communication_message,base.group_user,1,1,1,0

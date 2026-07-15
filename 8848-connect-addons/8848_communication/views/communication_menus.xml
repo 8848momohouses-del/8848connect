@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Root Menu for Communication Hub -->
+        <menuitem id="menu_communication_root"
+                  name="Communication"
+                  web_icon="8848_communication,static/description/icon.png"
+                  sequence="30"/>
+
+        <!-- Top level categories -->
+        <menuitem id="menu_communication_queue"
+                  name="Queue"
+                  parent="menu_communication_root"
+                  sequence="10"/>
+
+        <menuitem id="menu_communication_config"
+                  name="Configuration"
+                  parent="menu_communication_root"
+                  sequence="100"
+                  groups="base.group_system"/>
+    </data>
+</odoo>
