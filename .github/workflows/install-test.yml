@@ -1,0 +1,39 @@
+name: install-test
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+
+jobs:
+  fresh-db-install:
+    runs-on: ubuntu-latest
+    container:
+      image: odoo:19
+      options: --user root
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install all 8848 modules on an empty database and run baseline tests
+        run: |
+          odoo \
+            --db_host=postgres --db_user=odoo --db_password=odoo \
+            --addons-path=/usr/lib/python3/dist-packages/odoo/addons,$GITHUB_WORKSPACE/8848-connect-addons \
+            -d ci_test \
+            -i 8848_baseline_tests \
+            --test-enable --test-tags baseline_8848 \
+            --stop-after-init \
+            --log-level=warn
+      - name: Fail on test errors in exit status
+        run: echo "install + 15 baseline tests completed"

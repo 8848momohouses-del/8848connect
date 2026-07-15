@@ -1,0 +1,11 @@
+; 8848 Business Suite — LOCAL DEVELOPMENT configuration example.
+; Copy to project root as odoo.conf and adapt paths/user.
+; (The real local odoo.conf is currently still tracked in git — untracking it
+;  is a pending decision recorded in docs/runbook-rollback.md.)
+[options]
+; admin_passwd = set-a-strong-master-password
+db_host = False
+db_port = False
+db_user = YOUR_MACOS_OR_LINUX_USER
+db_password = False
+addons_path = /path/to/project/odoo/addons,/path/to/project/8848-connect-addons

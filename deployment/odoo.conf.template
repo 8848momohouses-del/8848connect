@@ -1,0 +1,27 @@
+; 8848 Business Suite — production/staging Odoo configuration TEMPLATE
+; Render by substituting ${VARS} from deployment/.env (deploy script task).
+; Secrets never live in git: this file is a template, the rendered copy
+; (odoo.conf.rendered) is gitignored on the server.
+[options]
+admin_passwd = ${ADMIN_PASSWD}
+db_host = db
+db_port = 5432
+db_user = ${DB_USER}
+db_password = ${DB_PASSWORD}
+
+; --- database exposure hardening (Deliverable 5) ---
+dbfilter = ^${DB_NAME}$
+list_db = False
+
+; --- reverse proxy (nginx terminates TLS) ---
+proxy_mode = True
+
+; --- workers: 2 http + gevent for websocket + cron ---
+workers = ${ODOO_WORKERS}
+max_cron_threads = 1
+
+addons_path = /usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
+data_dir = /var/lib/odoo
+
+logfile = /var/log/odoo/odoo.log
+log_level = info

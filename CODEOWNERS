@@ -1,0 +1,9 @@
+# 8848 Business Suite — code ownership
+# Every change requires review by the project owner.
+* @8848momohouses-del
+
+# Vendored third-party modules: never modified directly (Master Architecture
+# rule). PRs touching these additionally require the 'vendored-update' label
+# (enforced by .github/workflows/validate.yml).
+/8848-connect-addons/sign_oca/ @8848momohouses-del
+/8848-connect-addons/theme_liquid_glass/ @8848momohouses-del

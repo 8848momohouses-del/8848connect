@@ -1,0 +1,49 @@
+name: validate
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Release validation suite
+        run: python3 scripts/validate_addons.py
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks full-history scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  vendored-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Block edits to vendored modules without the vendored-update label
+        env:
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          CHANGED=$(git diff --name-only "origin/${{ github.base_ref }}"...HEAD \
+            -- '8848-connect-addons/sign_oca/**' '8848-connect-addons/theme_liquid_glass/**')
+          if [ -n "$CHANGED" ] && ! echo "$LABELS" | grep -q "vendored-update"; then
+            echo "::error::Vendored module files changed without 'vendored-update' label:"
+            echo "$CHANGED"
+            exit 1
+          fi
+          echo "vendored paths untouched (or explicitly labelled)"
