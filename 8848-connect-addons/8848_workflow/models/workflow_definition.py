@@ -30,3 +30,38 @@ class WorkflowDefinition(models.Model):
     _sql_constraints = [
         ('code_unique', 'unique(code, company_id)', 'Workflow code must be unique per company!')
     ]
+
+    def action_instantiate(self, res_model, res_id):
+        """
+        Instantiates this workflow definition for a specific business record.
+        """
+        self.ensure_one()
+        
+        # Verify target model
+        if self.target_model_id.model != res_model:
+            raise ValidationError(_("Workflow '%s' is designed for model %s, not %s.") % (self.name, self.target_model_id.model, res_model))
+            
+        Instance = self.env['8848.workflow.instance']
+        
+        # Check active instances if multiple not allowed
+        if not self.allow_multiple_active_instances:
+            existing = Instance.search([
+                ('workflow_id', '=', self.id),
+                ('res_model', '=', res_model),
+                ('res_id', '=', res_id),
+                ('active', '=', True),
+                ('state', '=', 'in_progress')
+            ], limit=1)
+            
+            if existing:
+                raise ValidationError(_("An active instance of workflow '%s' already exists for this record.") % self.name)
+        
+        # Create and start instance
+        instance = Instance.sudo().create({
+            'workflow_id': self.id,
+            'res_model': res_model,
+            'res_id': res_id,
+        })
+        instance.action_start()
+        
+        return instance

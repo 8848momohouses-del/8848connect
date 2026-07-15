@@ -28,3 +28,25 @@ class WorkflowTransition(models.Model):
         for record in self:
             if record.source_step_id == record.destination_step_id:
                 raise ValidationError(_("Source and destination steps cannot be the same."))
+
+    def _evaluate_condition(self, record):
+        """
+        Evaluates the transition's condition_domain against a business record.
+        :param record: The business record to evaluate against.
+        :return: True if the condition passes or is empty, False otherwise.
+        """
+        self.ensure_one()
+        if not self.condition_domain:
+            return True
+            
+        try:
+            import ast
+            domain = ast.literal_eval(self.condition_domain)
+            # Find if the record matches the domain
+            return bool(record.env[record._name].search([('id', '=', record.id)] + domain))
+        except Exception as e:
+            # If the domain is malformed, log it and return False
+            import logging
+            _logger = logging.getLogger(__name__)
+            _logger.error("Failed to evaluate workflow condition domain on %s: %s", self.name, e)
+            return False
