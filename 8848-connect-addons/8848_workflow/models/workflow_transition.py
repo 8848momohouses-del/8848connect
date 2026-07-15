@@ -13,7 +13,7 @@ class WorkflowTransition(models.Model):
     source_step_id = fields.Many2one('8848.workflow.step', string='Source Step', required=True, ondelete='cascade', domain="[('workflow_id', '=', workflow_id)]")
     destination_step_id = fields.Many2one('8848.workflow.step', string='Destination Step', required=True, ondelete='cascade', domain="[('workflow_id', '=', workflow_id)]")
     
-    required_group_id = fields.Many2one('res.groups', string='Required Group', help="Only users in this group can trigger this transition")
+    required_group_id = fields.Many2one('res.groups', string='Required Group', help="Only users in this group can execute this transition.")
     
     requires_comment = fields.Boolean(string='Requires Comment', default=False)
     requires_attachment = fields.Boolean(string='Requires Attachment', default=False)

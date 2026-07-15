@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_workflow_action_wizard_form" model="ir.ui.view">
+        <field name="name">8848.workflow.action.wizard.form</field>
+        <field name="model">8848.workflow.action.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Workflow Action">
+                <sheet>
+                    <group>
+                        <field name="instance_id" invisible="1"/>
+                        <field name="transition_id" invisible="1"/>
+                        <field name="requires_comment" invisible="1"/>
+                        <field name="requires_attachment" invisible="1"/>
+                        
+                        <field name="comment" attrs="{'required': [('requires_comment', '=', True)], 'invisible': [('requires_comment', '=', False)]}"/>
+                        <field name="attachment_name" invisible="1"/>
+                        <field name="attachment" filename="attachment_name" attrs="{'required': [('requires_attachment', '=', True)], 'invisible': [('requires_attachment', '=', False)]}"/>
+                    </group>
+                    <footer>
+                        <button name="action_confirm" string="Confirm" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

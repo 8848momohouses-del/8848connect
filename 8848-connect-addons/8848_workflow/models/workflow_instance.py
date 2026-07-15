@@ -74,6 +74,9 @@ class WorkflowInstance(models.Model):
                 except Exception as e:
                     raise ValidationError(_("Entry action failed on initial step %s: %s") % (instance.current_step_id.name, e))
 
+            # Create activities for the initial step
+            instance._create_step_activities(instance.current_step_id)
+
             # Create a log entry
             self.env['8848.workflow.log'].sudo().create({
                 'instance_id': instance.id,
@@ -98,6 +101,43 @@ class WorkflowInstance(models.Model):
                 'comment': reason or _("Workflow cancelled.")
             })
 
+    def _create_step_activities(self, step):
+        self.ensure_one()
+        if step.step_type != 'approval':
+            return
+            
+        activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
+        if not activity_type:
+            return
+            
+        users_to_assign = self.env['res.users']
+        if step.responsible_user_id:
+            users_to_assign |= step.responsible_user_id
+        elif step.responsible_group_id:
+            users_to_assign |= step.responsible_group_id.users
+            
+        model_id = self.env['ir.model']._get_id(self.res_model)
+        for user in users_to_assign:
+            self.env['mail.activity'].sudo().create({
+                'res_model_id': model_id,
+                'res_id': self.res_id,
+                'activity_type_id': activity_type.id,
+                'summary': _('Approval Required: %s') % step.name,
+                'note': _('Workflow %s is waiting for approval at step %s') % (self.workflow_id.name, step.name),
+                'user_id': user.id,
+            })
+
+    def _complete_step_activities(self):
+        self.ensure_one()
+        model_id = self.env['ir.model']._get_id(self.res_model)
+        activities = self.env['mail.activity'].sudo().search([
+            ('res_model_id', '=', model_id),
+            ('res_id', '=', self.res_id),
+            ('summary', 'like', 'Approval Required: %')
+        ])
+        for activity in activities:
+            activity.action_done()
+
     def execute_transition(self, transition):
         """Executes a transition on this instance."""
         self.ensure_one()
@@ -106,11 +146,21 @@ class WorkflowInstance(models.Model):
         if self.current_step_id != transition.source_step_id:
             raise ValidationError(_("Transition is not valid from the current step."))
             
+        # Security check: Does the user have the required group?
+        if transition.required_group_id:
+            if not self.env.user.has_group(transition.required_group_id.get_external_id()):
+                # Fallback to direct check if external ID is tricky
+                if self.env.user not in transition.required_group_id.users:
+                    raise AccessError(_("You do not have the required permissions (%s) to perform this transition.") % transition.required_group_id.name)
+            
         record = self._get_business_record()
         
         # Check transition condition domain
         if not transition._evaluate_condition(record):
             raise ValidationError(_("Transition conditions are not met."))
+        
+        # Complete activities for the source step
+        self._complete_step_activities()
         
         # Execute source step exit action
         if transition.source_step_id.exit_action_id:
@@ -125,6 +175,9 @@ class WorkflowInstance(models.Model):
 
         # Move to destination
         self.current_step_id = transition.destination_step_id
+        
+        # Create activities for destination step
+        self._create_step_activities(self.current_step_id)
         
         # Execute destination step entry action
         if self.current_step_id.entry_action_id:

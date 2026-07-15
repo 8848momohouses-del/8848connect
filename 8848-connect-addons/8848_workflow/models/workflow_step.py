@@ -19,6 +19,7 @@ class WorkflowStep(models.Model):
     ], string='Step Type', required=True, default='normal')
     
     responsible_group_id = fields.Many2one('res.groups', string='Responsible Group', help="Group responsible for this step")
+    responsible_user_id = fields.Many2one('res.users', string='Responsible User', help="Specific user responsible for this step")
     sla_hours = fields.Float(string='SLA (Hours)', help="Expected duration to complete this step")
     
     entry_action_id = fields.Many2one('ir.actions.server', string='Entry Action', help="Server action executed when entering this step")

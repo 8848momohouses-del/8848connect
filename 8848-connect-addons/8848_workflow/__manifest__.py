@@ -23,6 +23,7 @@
     ],
     'data': [
         'security/ir.model.access.csv',
+        'wizard/workflow_action_wizard_views.xml',
         'views/workflow_menus.xml',
         'views/workflow_definition_views.xml',
         'views/workflow_step_views.xml',
