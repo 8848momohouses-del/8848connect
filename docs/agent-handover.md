@@ -1,29 +1,26 @@
 # Agent Handover Documentation
 
-- **Current Milestone:** Step 1 (Completed)
-- **Current Branch:** feature/8848-security
-- **Last Completed Work:** Implementation of `8848_security` (Batches A, B, C, D) + Executive ACL Corrections.
-- **Outstanding Work:** Awaiting user to merge this branch and begin Step 2.
-- **Commands Used for Validation:**
-  - `dropdb Momohouse_test || true && createdb Momohouse_test`
-  - `./venv/bin/python setup/odoo -c odoo.conf -d Momohouse_test --http-port 8070 -i 8848_baseline_tests,8848_security... --test-tags /8848_baseline_tests --stop-after-init`
-- **Tests Passed:** `scripts/validate_addons.py` ran successfully. Odoo 19 core test suite ran with `0 failed, 0 error(s) of 20 tests` for the 8848 modules. The CEO and GM permissions and exact financial unlink blocks were thoroughly verified.
-- **Known Issues / Limitations:**
+- **Current Milestone:** Milestone 1 (Security - Merged)
+- **Current Branch:** main
+- **Last Completed Work:** Merged `feature/8848-security` to `main` and created tag `milestone-1-security`.
+- **Merge Commit:** `eb7704e` (Fast-forward merge of feature branch into main).
+- **Tag:** `milestone-1-security`
+- **Commands Executed:**
+  - `git merge feature/8848-security`
+  - `git tag milestone-1-security`
+- **Final Test Summary:** Odoo 19 core test suite ran on scratch DB with `0 failed, 0 error(s) of 20 tests` for the 8848 baseline and security modules.
+- **Known Technical Debt:**
   - Missing author keys in `8848_dashboard`, `8848_portal`, `8848_store_performance`, `8848_supplier`.
-  - Store performance has no state field, meaning records cannot be deleted even when draft (it unconditionally blocks deletion). *Future Recommendation: Introduce state workflow to allow draft corrections.*
-  - Infrastructure configuration (VPS provisioning, branch protection) requires user credentials or purchase decisions.
-- **Rollback Procedure:**
-  1. Take full DB and filestore backups.
-  2. Revert the Git branch to the prior working state.
-  3. Restart Odoo service.
-  4. Run `odoo -u 8848_franchise,8848_royalty,8848_marketing_fee,8848_store_performance,8848_delivery` to overwrite strict CSVs.
-  5. Leave `8848_security` installed if it is no longer actively used. Only uninstall it when intentionally reverting the entire platform back to the Milestone 0 architecture.
-- **Merge Recommendation:** All criteria for Step 1 are met. We recommend merging `feature/8848-security` to `main` and beginning Step 2.
-- **Files Changed:** Created `8848_security`, updated `ir.model.access.csv` in `8848_franchise`, `8848_royalty`, `8848_marketing_fee`, `8848_store_performance`, `8848_delivery`. Added `unlink()` overrides. Created integrated testing in `8848_baseline_tests/tests/test_security.py`.
-- **Commit Hashes:**
-  - Latest `[HEAD]` (Executive ACL corrections & Verification Tests)
-  - `2ccf98f` (Batch D)
-  - `25b9666` (Batch C)
-  - `4e9dbec` (Batch B)
-  - `e94f0e7` (Batch A)
-  - Base: `fa32f6e` (Milestone 0)
+  - Store Performance records are currently unconditionally blocked from deletion. *Future Correction:* Introduce an Archive/Cancel state workflow and create corrected records to preserve the audit trail instead of hard Python blocks.
+- **Rollback Summary:**
+  If reverting Step 1 post-deployment:
+  1. Full DB/Filestore backup.
+  2. Revert git to Milestone 0 (`fa32f6e`).
+  3. Upgrade all business modules (`odoo -u 8848_franchise,8848_royalty...`) to restore permissive ACLs.
+  4. Leave `8848_security` installed unless intentionally removing the foundation architecture entirely.
+
+---
+## Next Phase Preparation (Milestone 1.5 - Production Infrastructure)
+- **Target Branch:** `feature/production-hosting` (Pending creation)
+- **Objective:** Transform the local system into a production-ready Docker Compose platform (Ubuntu LTS, Nginx, Let's Encrypt, PostgreSQL).
+- **Strict Constraint:** ZERO business logic changes allowed. No modifications to workflows, CRM, Portal, Factory, or Inventory.
