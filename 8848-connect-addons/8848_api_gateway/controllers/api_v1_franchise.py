@@ -40,8 +40,10 @@ class ApiV1FranchiseController(http.Controller):
         # 3. Transport Idempotency and Audit Log setup
         ReqLog = request.env['8848.api.request.log'].sudo()
         
+        from odoo.tools import mute_logger
+        
         try:
-            with request.env.cr.savepoint():
+            with mute_logger('odoo.sql_db'), request.env.cr.savepoint():
                 current_log = ReqLog.create({
                     'api_client_id': client.id,
                     'route_code': 'franchise_inquiry',

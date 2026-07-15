@@ -34,7 +34,7 @@ def authenticate_request(route_code):
     current_time = int(time.time())
     
     # 2. Lookup API Client
-    client = request.env['8848.api.client'].sudo().search([('key_id', '=', key_id)], limit=1)
+    client = request.env['8848.api.client'].sudo().with_context(active_test=False).search([('key_id', '=', key_id)], limit=1)
     if not client:
         raise ApiAuthException(401, "Unknown Key ID.")
         

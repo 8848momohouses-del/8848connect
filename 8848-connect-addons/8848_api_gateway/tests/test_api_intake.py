@@ -111,7 +111,7 @@ class TestApiIntake(HttpCase):
             'idempotency_key': idem_key,
             'request_body_hash': body_hash,
             'state': 'processing',
-            'started_at': fields.Datetime.now() - fields.Datetime.timedelta(hours=2)
+            'started_at': fields.Datetime.now() - __import__('datetime').timedelta(hours=2)
         })
         
         headers = self._generate_headers('POST', self.url, body, idempotency_key=idem_key)

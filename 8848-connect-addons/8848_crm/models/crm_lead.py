@@ -58,7 +58,7 @@ class CrmLead(models.Model):
 
         # 2. Normalize
         email_from = payload['email_from'].strip().lower()
-        mobile = payload.get('mobile', '').strip()
+        phone = payload.get('phone', payload.get('mobile', '')).strip()
         external_entry_id = payload.get('external_entry_id')
 
         # 3. Idempotency Check
@@ -91,7 +91,7 @@ class CrmLead(models.Model):
             'name': f"Franchise Enquiry: {payload.get('contact_name')} - {territory_interest or 'General'}",
             'contact_name': payload['contact_name'],
             'email_from': email_from,
-            'mobile': mobile,
+            'phone': phone,
             'franchise_territory_interest': territory_interest,
             'external_entry_id': external_entry_id,
             'type': 'opportunity',
@@ -198,7 +198,7 @@ class CrmLead(models.Model):
                     score += 10
             
             # Additional points for general completeness
-            if lead.mobile:
+            if lead.phone:
                 score += 5
             if lead.franchise_territory_interest:
                 score += 5
@@ -252,7 +252,7 @@ class CrmLead(models.Model):
                 partner_vals = {
                     'name': lead.contact_name,
                     'email': lead.email_from,
-                    'mobile': lead.mobile,
+                    'phone': lead.phone,
                     'is_franchise': True,
                     'territory': lead.franchise_territory_interest,
                     'enquiry_date': lead.create_date.date(),

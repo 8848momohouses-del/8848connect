@@ -33,7 +33,7 @@ class CrmIntakeService(models.AbstractModel):
         clean_payload = {
             'contact_name': contact_name,
             'email_from': email_from,
-            'mobile': payload.get('mobile', '').strip(),
+            'phone': payload.get('phone', payload.get('mobile', '')).strip(),
             'franchise_territory_interest': payload.get('franchise_territory_interest', '').strip(),
             'external_entry_id': integration_context.get('idempotency_key'),
             'message': payload.get('message', '').strip(),
