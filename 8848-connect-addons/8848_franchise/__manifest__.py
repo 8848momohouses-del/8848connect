@@ -11,12 +11,10 @@
         the operational gate consumed by the portal and reporting modules.
     """,
     'author': '8848 Momo House',
-    'depends': ['base', 'contacts', '8848_security', '8848_workflow', '8848_communication'],
+    'depends': ['base', 'contacts', '8848_security'],
     'data': [
         'security/ir.model.access.csv',
         'data/franchise_stage_data.xml',
-        'data/franchise_workflow_demo.xml',
-        'data/franchise_communication_demo.xml',
         'views/res_partner_views.xml',
     ],
     'post_init_hook': '_assign_stage_to_existing_franchises',

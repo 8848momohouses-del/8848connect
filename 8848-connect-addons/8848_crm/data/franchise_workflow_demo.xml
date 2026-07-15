@@ -55,33 +55,5 @@ record.write({'franchise_approved': True})
             <field name="sequence">40</field>
         </record>
 
-        <!-- Update workflow definition with initial step -->
-        <record id="demo_workflow_franchise" model="8848.workflow.definition">
-            <field name="initial_step_id" ref="demo_step_franchise_draft"/>
-        </record>
-
-        <!-- Transitions -->
-        <record id="demo_trans_draft_to_review" model="8848.workflow.transition">
-            <field name="name">Submit for Review</field>
-            <field name="workflow_id" ref="demo_workflow_franchise"/>
-            <field name="source_step_id" ref="demo_step_franchise_draft"/>
-            <field name="destination_step_id" ref="demo_step_franchise_review"/>
-        </record>
-
-        <record id="demo_trans_review_to_approved" model="8848.workflow.transition">
-            <field name="name">Approve Application</field>
-            <field name="workflow_id" ref="demo_workflow_franchise"/>
-            <field name="source_step_id" ref="demo_step_franchise_review"/>
-            <field name="destination_step_id" ref="demo_step_franchise_approved"/>
-            <field name="requires_comment" eval="True"/>
-        </record>
-
-        <record id="demo_trans_review_to_rejected" model="8848.workflow.transition">
-            <field name="name">Reject Application</field>
-            <field name="workflow_id" ref="demo_workflow_franchise"/>
-            <field name="source_step_id" ref="demo_step_franchise_review"/>
-            <field name="destination_step_id" ref="demo_step_franchise_rejected"/>
-            <field name="requires_comment" eval="True"/>
-        </record>
     </data>
 </odoo>
