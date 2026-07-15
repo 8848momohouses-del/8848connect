@@ -129,4 +129,38 @@ Installed custom modules (as of 2026-07-15):
 
 Known conventions: module prefix `8848_`, LGPL-3, version strings currently `1.0`.
 Enterprise-only modules (knowledge, studio, barcode, planning, mrp_mps, quality
-worksheets…) are NOT available — Community-safe implementations only.
+worksheets, helpdesk, approvals…) are NOT available — Community-safe only.
+
+# Approved Master Architecture v2 (2026-07-15 — analysis approved, build order fixed)
+
+Planned modules, in dependency order (each new module depends on 8848_franchise;
+no renames/moves of existing modules; additive schema only):
+1. `8848_security` — department group taxonomy (Operations/IT/Marketing/Factory/
+   Accounts/Compliance × user/manager) + record rules; retires the
+   all-users-full-CRUD ACL debt on royalty/marketing/store models.
+2. `8848_workflow` — generic workflow engine (definition/step/instance + mixin);
+   guards existing state fields, never replaces them; activity-based approvals;
+   base_automation triggers (Community-verified).
+3. `8848_notify` — Notification Centre: rule + log models; channels = bus in-app,
+   mail templates, activities, digest; escalation to managers/GM.
+4. `8848_crm` — website enquiry → crm.lead → SAME franchise master record
+   (dedupe by email/phone); wires lifecycle stages 1–7.
+5. `8848_communication` — Communication Hub: department mail.alias routing to
+   the master record, unified cross-record timeline tab, template library.
+6. `8848_documents` — franchise workspace on ir.attachment + seeded category
+   model + auto-filing rules (statements→Royalty, sign→Agreements, etc.).
+7. `8848_agreement` — sign_oca glue: Agreement stage → sign request → sets
+   agreement_signed_date + files the signed PDF.
+8. `8848_workspace` — Department Workspaces: 8848.department model + OWL
+   workspace (work queue, KPIs, docs, notifications) per department.
+9. `8848_audit` — audit types/templates/checklists/scoring/corrective actions,
+   repeat-failure alerts via 8848_notify; feeds store_performance compliance.
+10. Portal v2 + `8848_supply_chain` — activation gate on is_operational; portal
+    factory ordering; Procure(purchase+supplier)→Produce(mrp+factory/warehouse/
+    quality QA gate)→Deliver(install 8848_delivery/8848_driver); OTIF KPIs.
+11. Automation pass — monthly statement crons, paid-state sync from payments,
+    statement/audit QWeb PDFs, BPA process data.
+
+Tech-debt register (fix when touching the module): portal sudo() + missing
+is_operational gate; statement invoice lines lack product/account/tax config;
+store_performance hardcoded weights; 4 manifests missing author key.
