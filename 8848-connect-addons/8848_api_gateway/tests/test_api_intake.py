@@ -96,3 +96,48 @@ class TestApiIntake(HttpCase):
         response = self.url_open(self.url, data=json.dumps(body), headers=headers)
         
         self.assertEqual(response.status_code, 413)
+
+    def test_stale_processing_recovery(self):
+        idem_key = 'idem-stale'
+        body = {'contact_name': 'Stale', 'email_from': 'stale@8848.com'}
+        
+        # Manually create a stale log
+        body_bytes = json.dumps(body).encode('utf-8')
+        body_hash = hashlib.sha256(body_bytes).hexdigest()
+        from odoo import fields
+        self.env['8848.api.request.log'].create({
+            'api_client_id': self.client.id,
+            'route_code': 'franchise_inquiry',
+            'idempotency_key': idem_key,
+            'request_body_hash': body_hash,
+            'state': 'processing',
+            'started_at': fields.Datetime.now() - fields.Datetime.timedelta(hours=2)
+        })
+        
+        headers = self._generate_headers('POST', self.url, body, idempotency_key=idem_key)
+        response = self.url_open(self.url, data=json.dumps(body), headers=headers)
+        
+        # Should recover and process
+        self.assertEqual(response.status_code, 201)
+
+    def test_active_processing_conflict(self):
+        idem_key = 'idem-active'
+        body = {'contact_name': 'Active', 'email_from': 'active@8848.com'}
+        
+        body_bytes = json.dumps(body).encode('utf-8')
+        body_hash = hashlib.sha256(body_bytes).hexdigest()
+        from odoo import fields
+        self.env['8848.api.request.log'].create({
+            'api_client_id': self.client.id,
+            'route_code': 'franchise_inquiry',
+            'idempotency_key': idem_key,
+            'request_body_hash': body_hash,
+            'state': 'processing',
+            'started_at': fields.Datetime.now()
+        })
+        
+        headers = self._generate_headers('POST', self.url, body, idempotency_key=idem_key)
+        response = self.url_open(self.url, data=json.dumps(body), headers=headers)
+        
+        self.assertEqual(response.status_code, 409)
+        self.assertTrue('already processing' in response.json().get('error'))
