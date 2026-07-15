@@ -8,6 +8,7 @@
     'author': '8848 Momo House',
     'depends': ['base'],
     'data': [
+        'security/security_categories.xml',
         'security/security_groups.xml',
         'security/ir.model.access.csv',
     ],
