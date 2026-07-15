@@ -16,6 +16,9 @@
 
 ---
 ## Next Phase Preparation (Milestone 2 - Workflow Engine)
-- **Target Branch:** `feature/8848-workflow` (Pending creation)
+- **Target Branch:** `feature/8848-workflow` (Created)
 - **Objective:** Build a Community-compatible workflow engine (`8848_workflow`) that coordinates business processes across existing native models without replacing their source-of-truth state fields.
 - **Strict Constraint:** Must not use Odoo Enterprise tools or overwrite existing `state`/`stage_id` fields natively used by Odoo core and business models.
+- **Batch Status:** 
+  - **Batch W1**: COMPLETED (Foundation models, views, and security).
+  - **Batch W2**: PENDING (Definition, steps, transitions and instance engine).
