@@ -1,7 +1,9 @@
 # Agent Handover Documentation
+- **Official Repository:** `https://github.com/8848momohouses-del/8848connect.git`
+- **Current Commit (feature/8848-workflow):** `dc24d7a`
 
 - **Current Milestone:** Milestone 1.5 (Production Infrastructure - Merged)
-- **Current Branch:** main
+- **Current Branch:** feature/8848-workflow
 - **Last Completed Work:** Merged `feature/production-hosting` to `main` and created tag `milestone-1.5-production-hosting`.
 - **Merge Commit:** `d227637` (Fast-forward merge of production-hosting branch into main).
 - **Tag:** `milestone-1.5-production-hosting`
