@@ -68,3 +68,9 @@ class RoyaltyStatement(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
+
+    def unlink(self):
+        for record in self:
+            if record.state != 'draft' or record.invoice_id:
+                raise UserError(_("You cannot delete a statement that is not in draft state or has a linked invoice. Please cancel or archive it instead."))
+        return super().unlink()

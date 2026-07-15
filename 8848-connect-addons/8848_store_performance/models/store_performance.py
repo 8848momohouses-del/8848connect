@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 class StorePerformance(models.Model):
     _name = '8848.store.performance'
@@ -27,3 +28,6 @@ class StorePerformance(models.Model):
             rating_score = (record.customer_rating / 5) * 100 * 0.3
             compliance = record.compliance_score * 0.3
             record.total_score = sales_score + rating_score + compliance
+
+    def unlink(self):
+        raise UserError(_("Store performance records cannot be deleted. Please archive them instead or contact the system administrator."))
