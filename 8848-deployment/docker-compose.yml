@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  web:
+    image: odoo:17.0
+    container_name: 8848_odoo
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config/odoo.conf:/etc/odoo/odoo.conf
+      - ../8848-connect-addons:/mnt/extra-addons
+    env_file:
+      - .env
+    restart: always
+
+  db:
+    image: postgres:15
+    container_name: 8848_postgres
+    env_file:
+      - .env
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: 8848_nginx
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    restart: always
+
+volumes:
+  odoo-web-data:
+  odoo-db-data:
