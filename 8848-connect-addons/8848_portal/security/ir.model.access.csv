@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_franchise_access_system,franchise_access.system,model_8848_franchise_access,base.group_system,1,1,1,1
+access_franchise_access_ops,franchise_access.ops,model_8848_franchise_access,8848_security.group_8848_ops_manager,1,1,1,0
+access_franchise_access_gm,franchise_access.gm,model_8848_franchise_access,8848_security.group_8848_gm,1,1,1,1
+access_franchise_access_ceo,franchise_access.ceo,model_8848_franchise_access,8848_security.group_8848_ceo,1,1,1,1
