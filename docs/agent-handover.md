@@ -3,7 +3,7 @@
 - **Current Commit (main):** Completed Milestone 6 (Factory & Supply Chain)
 - **Current Milestone:** [x] Milestone 1.5, [x] Milestone 2, [x] Milestone 3, [x] Milestone 4, [x] Milestone 5, [x] Milestone 6
 - **Current Branch:** main
-- **Last Completed Work:** Batch F4 of Milestone 6B (Packing workflow).
+- **Last Completed Work:** Batch F5 of Milestone 6B (Packing-slip and delivery-slip reports).
 - **Validation Executed:**
   - Automated tests pass for all supply chain models (`8848_supplier`, `8848_factory`, `8848_warehouse`, `8848_delivery`).
   - Final functional regression verification successful.

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_8848_delivery_slip" model="ir.actions.report">
+        <field name="name">8848 Delivery Slip</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">8848_delivery.report_delivery_slip_template</field>
+        <field name="report_file">8848_delivery.report_delivery_slip_template</field>
+        <field name="print_report_name">'Delivery Slip - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_delivery_slip_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-6">
+                                <h2>8848 Delivery Slip</h2>
+                                <strong>Order:</strong> <span t-field="o.origin"/><br/>
+                                <strong>Picking:</strong> <span t-field="o.name"/><br/>
+                                <strong>Route:</strong> <span t-field="o.route_id.name"/><br/>
+                                <strong>Driver:</strong> <span t-field="o.route_id.driver_id.name"/><br/>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>Franchise Store:</strong> <span t-field="o.partner_id.name"/><br/>
+                                <strong>Address:</strong> <span t-field="o.partner_id.contact_address"/><br/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm mt48">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-end">Dispatched Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.move_ids" t-as="move">
+                                    <tr>
+                                        <td><span t-field="move.product_id.name"/></td>
+                                        <td class="text-end"><span t-field="move.quantity"/> <span t-field="move.product_uom.name"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="row mt64" style="page-break-inside: avoid;">
+                            <div class="col-12">
+                                <h4>Customer Acknowledgement</h4>
+                                <p>I confirm receipt of the above goods in good condition.</p>
+                                <br/><br/>
+                                <strong>Signature:</strong> ___________________________
+                                <br/><br/>
+                                <strong>Name:</strong> _______________________________
+                                <br/><br/>
+                                <strong>Date:</strong> _______________________________
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

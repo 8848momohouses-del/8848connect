@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_8848_packing_slip" model="ir.actions.report">
+        <field name="name">8848 Packing Slip</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">8848_delivery.report_packing_slip_template</field>
+        <field name="report_file">8848_delivery.report_packing_slip_template</field>
+        <field name="print_report_name">'Packing Slip - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_packing_slip_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-6">
+                                <h2>8848 Packing Slip</h2>
+                                <strong>Order:</strong> <span t-field="o.origin"/><br/>
+                                <strong>Picking:</strong> <span t-field="o.name"/><br/>
+                                <strong>Date:</strong> <span t-field="o.scheduled_date" t-options='{"widget": "date"}'/><br/>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>Franchise Store:</strong> <span t-field="o.partner_id.name"/><br/>
+                                <strong>Address:</strong> <span t-field="o.partner_id.contact_address"/><br/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm mt48">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-end">Ordered Qty</th>
+                                    <th class="text-end">Packed Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.move_ids" t-as="move">
+                                    <tr>
+                                        <td><span t-field="move.product_id.name"/></td>
+                                        <td class="text-end"><span t-field="move.product_uom_qty"/> <span t-field="move.product_uom.name"/></td>
+                                        <td class="text-end"><span t-field="move.quantity"/> <span t-field="move.product_uom.name"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="row mt32">
+                            <div class="col-6">
+                                <strong>Packed By:</strong> <span t-field="o.packed_by.name"/><br/>
+                                <strong>Packing Date:</strong> <span t-field="o.packed_at" t-options='{"widget": "date"}'/><br/>
+                                <strong>Total Packages:</strong> <span t-field="o.package_count"/><br/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Notes:</strong><br/>
+                                <span t-field="o.packing_notes"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
