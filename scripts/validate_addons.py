@@ -137,10 +137,18 @@ def check_dependencies(mod: pathlib.Path, manifest: dict,
                           f"'{dep}' is forbidden")
 
 
+# Foundation-layer 8848 dependencies the franchise core is allowed to have.
+# Milestone 1 added 8848_security (groups); Milestone 5 applied the
+# 8848_workflow mixin directly on res.partner, placing the engine beneath
+# the core. Anything else remains a layering violation.
+FOUNDATION_ALLOWED_DEPS = {"8848_security", "8848_workflow"}
+
+
 def check_foundation_purity(manifests: dict[str, dict]) -> None:
     core = manifests.get("8848_franchise")
     if core:
-        bad = [d for d in core.get("depends", []) if d.startswith("8848_") and d != "8848_security"]
+        bad = [d for d in core.get("depends", [])
+               if d.startswith("8848_") and d not in FOUNDATION_ALLOWED_DEPS]
         for dep in bad:
             errors.append(f"[layering] 8848_franchise (foundation) must not "
                           f"depend on {dep}")

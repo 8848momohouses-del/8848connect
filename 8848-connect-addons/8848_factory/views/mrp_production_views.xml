@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_mrp_production_form_inherit_8848_factory" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit.8848.factory</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="qa_supervisor_id"/>
+                <field name="batch_temperature"/>
+                <field name="waste_quantity" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
