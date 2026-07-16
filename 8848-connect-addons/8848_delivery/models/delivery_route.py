@@ -9,8 +9,19 @@ class DeliveryRoute(models.Model):
 
     name = fields.Char(string='Route Reference', required=True, copy=False, readonly=True, default=lambda self: _('New'))
     date = fields.Date(string='Date', required=True, default=fields.Date.context_today, tracking=True)
-    driver_id = fields.Many2one('hr.employee', string='Driver', domain=[('is_driver', '=', True)], tracking=True)
-    vehicle_id = fields.Many2one('fleet.vehicle', string='Vehicle', tracking=True)
+    driver_id = fields.Many2one('res.users', string='Driver')
+    vehicle_id = fields.Many2one('fleet.vehicle', string='Vehicle')
+    
+    # Proof of Delivery fields
+    recipient_name = fields.Char(string='Recipient Name', copy=False, tracking=True)
+    delivered_at = fields.Datetime(string='Delivered At', copy=False, tracking=True)
+    failed_delivery_reason = fields.Char(string='Failed Reason', copy=False, tracking=True)
+    delivery_notes = fields.Text(string='Delivery Notes', copy=False)
+    delivery_photo = fields.Binary(string='Delivery Photo', copy=False, attachment=True)
+    delivery_signature = fields.Binary(string='Delivery Signature', copy=False, attachment=True)
+    delivery_latitude = fields.Float(string='Latitude', digits=(10, 7), copy=False)
+    delivery_longitude = fields.Float(string='Longitude', digits=(10, 7), copy=False)
+    
     picking_ids = fields.One2many('stock.picking', 'route_id', string='Deliveries', domain=[('picking_type_code', '=', 'outgoing')])
     
     state = fields.Selection([

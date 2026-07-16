@@ -53,6 +53,24 @@
                                     </list>
                                 </field>
                             </page>
+                            <page string="Proof of Delivery">
+                                <group>
+                                    <group>
+                                        <field name="recipient_name" readonly="state == 'done'"/>
+                                        <field name="delivered_at" readonly="state == 'done'"/>
+                                        <field name="failed_delivery_reason" readonly="state == 'done'"/>
+                                    </group>
+                                    <group>
+                                        <field name="delivery_latitude" readonly="state == 'done'"/>
+                                        <field name="delivery_longitude" readonly="state == 'done'"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="delivery_notes" readonly="state == 'done'"/>
+                                    <field name="delivery_signature" widget="image" readonly="state == 'done'"/>
+                                    <field name="delivery_photo" widget="image" readonly="state == 'done'"/>
+                                </group>
+                            </page>
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">
