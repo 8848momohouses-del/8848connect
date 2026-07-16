@@ -169,7 +169,7 @@ class CrmLead(models.Model):
         if existing:
             return
 
-        date_deadline = fields.Date.context_today(self) + fields.Datetime.timedelta(days=delay_days)
+        date_deadline = fields.Date.context_today(self) + __import__('datetime').timedelta(days=delay_days)
         self.env['mail.activity'].create({
             'res_model_id': self.env.ref('crm.model_crm_lead').id,
             'res_id': self.id,
