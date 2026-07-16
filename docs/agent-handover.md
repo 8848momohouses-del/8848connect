@@ -2,8 +2,8 @@
 - **Official Repository:** `https://github.com/8848momohouses-del/8848connect.git`
 - **Current Commit (main):** Completed Milestone 6 (Factory & Supply Chain)
 - **Current Milestone:** [x] Milestone 1.5, [x] Milestone 2, [x] Milestone 3, [x] Milestone 4, [x] Milestone 5, [x] Milestone 6
-- **Current Branch:** feature/prg1-remediation
-- **Last Completed Work:** Completed PRG-1 Remediation (Odoo 19 deployment, strict picking validation, invoice idempotency, full ACL matrix, and E2E tests).
+- **Current Branch:** feature/milestone-7-franchise-portal
+- **Last Completed Work:** Completed Batch P1 (Existing portal audit, access-ownership contract) and Batch P2 (Portal eligibility, invitations, roles).
 - **Validation Executed:**
   - Automated tests pass for all supply chain models (`8848_supplier`, `8848_factory`, `8848_warehouse`, `8848_delivery`).
   - Final functional regression verification successful.

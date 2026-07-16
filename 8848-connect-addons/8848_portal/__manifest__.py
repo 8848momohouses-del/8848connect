@@ -8,6 +8,8 @@
     'data': [
         'security/security_rules.xml',
         'security/ir.model.access.csv',
+        'wizard/portal_invite_wizard_views.xml',
+        'views/res_partner_views.xml',
         'views/portal_templates.xml',
     ],
     'installable': True,
