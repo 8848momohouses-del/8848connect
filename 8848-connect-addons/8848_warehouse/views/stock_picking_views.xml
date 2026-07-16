@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_8848_packing" model="ir.ui.view">
+        <field name="name">stock.picking.form.8848.packing</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_start_packing" type="object" string="Start Packing" 
+                        class="btn-secondary" 
+                        invisible="picking_type_code != 'outgoing' or state != 'assigned' or packing_status != 'pending'"/>
+                <button name="action_finish_packing" type="object" string="Finish Packing" 
+                        class="btn-primary" 
+                        invisible="picking_type_code != 'outgoing' or packing_status != 'packing'"/>
+            </xpath>
+
+            <xpath expr="//page[@name='extra']" position="inside">
+                <group string="8848 Packing Details" invisible="picking_type_code != 'outgoing'">
+                    <field name="packing_status" widget="badge"
+                           decoration-info="packing_status == 'pending'"
+                           decoration-warning="packing_status == 'packing'"
+                           decoration-success="packing_status == 'packed'"/>
+                    <field name="packed_by"/>
+                    <field name="packing_started_at"/>
+                    <field name="packed_at"/>
+                    <field name="package_count"/>
+                    <field name="packing_notes"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
