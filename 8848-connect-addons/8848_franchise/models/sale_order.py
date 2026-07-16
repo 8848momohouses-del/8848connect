@@ -35,6 +35,17 @@ class SaleOrder(models.Model):
             if self.partner_id.franchise_stage_id and self.partner_id.franchise_stage_id.code != 'operational':
                 raise exceptions.UserError(_("This franchise is not in the 'Operational' stage. Approval blocked."))
 
+        # Check for insufficient stock and warn, but don't strictly block approval.
+        # This explicitly shows insufficient stock state.
+        for line in self.order_line:
+            if line.product_id.is_storable and line.product_uom_qty > line.product_id.virtual_available:
+                # We can choose to block or just let the standard Odoo warning show up in the UI.
+                # The prompt asks: "insufficient stock is clearly shown; partial availability is supported"
+                # If we raise an error, they can't approve it. So let's just log a message in chatter instead.
+                self.message_post(body=_("Approval Note: Insufficient stock for %s. Ordered: %s, Available: %s") % (
+                    line.product_id.display_name, line.product_uom_qty, line.product_id.virtual_available
+                ))
+
         self.write({
             'approval_state': 'approved',
             'approved_by': self.env.user.id,
