@@ -1,7 +1,14 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_delivery_route_user,delivery_route.user,model_8848_delivery_route,8848_security.group_8848_ops_manager,1,1,1,1
 access_delivery_route_read,delivery_route.read,model_8848_delivery_route,base.group_user,1,0,0,0
+access_delivery_route_driver,delivery_route.driver,model_8848_delivery_route,8848_driver.group_8848_driver,1,1,0,0
 access_delivery_route_ops_user,delivery_route.ops_user,model_8848_delivery_route,8848_security.group_8848_ops_user,1,1,1,0
-access_delivery_route_admin,delivery_route.admin,model_8848_delivery_route,base.group_system,1,1,1,1
-access_delivery_route_ceo,delivery_route.ceo,model_8848_delivery_route,8848_security.group_8848_ceo,1,1,1,1
+access_delivery_route_ops_manager,delivery_route.ops_manager,model_8848_delivery_route,8848_security.group_8848_ops_manager,1,1,1,1
+access_delivery_route_factory_user,delivery_route.factory_user,model_8848_delivery_route,8848_security.group_8848_factory_user,1,0,0,0
+access_delivery_route_acc_user,delivery_route.acc_user,model_8848_delivery_route,8848_security.group_8848_acc_user,1,0,0,0
+access_delivery_route_acc_manager,delivery_route.acc_manager,model_8848_delivery_route,8848_security.group_8848_acc_manager,1,1,0,0
+access_delivery_route_comp_user,delivery_route.comp_user,model_8848_delivery_route,8848_security.group_8848_comp_user,1,0,0,0
+access_delivery_route_mkt_user,delivery_route.mkt_user,model_8848_delivery_route,8848_security.group_8848_mkt_user,1,0,0,0
+access_delivery_route_it_user,delivery_route.it_user,model_8848_delivery_route,8848_security.group_8848_it_user,1,0,0,0
 access_delivery_route_gm,delivery_route.gm,model_8848_delivery_route,8848_security.group_8848_gm,1,1,1,1
+access_delivery_route_ceo,delivery_route.ceo,model_8848_delivery_route,8848_security.group_8848_ceo,1,1,1,1
+access_delivery_route_admin,delivery_route.admin,model_8848_delivery_route,base.group_system,1,1,1,1

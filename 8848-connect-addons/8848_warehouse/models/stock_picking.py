@@ -24,10 +24,15 @@ class StockPicking(models.Model):
                 'packing_started_at': fields.Datetime.now()
             })
 
-    def action_finish_packing(self):
+    def action_mark_packed(self):
         for picking in self:
+            if not (self.env.user.has_group('8848_security.group_8848_factory_user') or 
+                    self.env.user.has_group('8848_security.group_8848_ops_user') or 
+                    self.env.user.has_group('stock.group_stock_user')):
+                raise exceptions.AccessError(_("You do not have permission to pack warehouse orders."))
+                
             if picking.packing_status != 'packing':
-                raise exceptions.UserError(_("Must start packing first."))
+                raise exceptions.UserError(_("Picking must be in 'packing' state to mark as packed."))
             
             picking.write({
                 'packing_status': 'packed',
@@ -47,6 +52,8 @@ class StockPicking(models.Model):
                     'body': f"<p>Your order {picking.origin or picking.name} has been packed.</p>",
                     'status': 'queued',
                 })
+
+
 
     def button_validate(self):
         for picking in self:

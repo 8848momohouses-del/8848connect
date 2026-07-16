@@ -21,6 +21,16 @@ class DeliveryRoute(models.Model):
     delivery_signature = fields.Binary(string='Delivery Signature', copy=False, attachment=True)
     delivery_latitude = fields.Float(string='Latitude', digits=(10, 7), copy=False)
     delivery_longitude = fields.Float(string='Longitude', digits=(10, 7), copy=False)
+
+    # Invoicing Fields
+    invoice_status = fields.Selection([
+        ('not_ready', 'Not Ready'),
+        ('pending', 'Pending'),
+        ('created', 'Created'),
+        ('failed', 'Failed')
+    ], string='Invoice Status', default='not_ready', required=True)
+    invoice_attempt_count = fields.Integer(string='Invoice Attempt Count', default=0)
+    last_invoice_error = fields.Text(string='Last Invoice Error')
     
     picking_ids = fields.One2many('stock.picking', 'route_id', string='Deliveries', domain=[('picking_type_code', '=', 'outgoing')])
     
@@ -60,18 +70,36 @@ class DeliveryRoute(models.Model):
 
     def action_done(self):
         for route in self:
+            # First pass: Check all pickings for recorded quantities
+            pending_pickings = route.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
+            for picking in pending_pickings:
+                if not any(move.quantity > 0 for move in picking.move_ids):
+                    raise exceptions.UserError(_(
+                        "Picking %s has no processed quantities. "
+                        "You must explicitly record delivered quantities or cancel the picking to complete the route."
+                    ) % picking.name)
+
+            # Second pass: Validate pickings and handle wizards
+            for picking in pending_pickings:
+                res = picking.button_validate()
+                
+                # If a wizard is returned, intercept and process it automatically
+                if isinstance(res, dict) and res.get('res_model') == 'stock.backorder.confirmation':
+                    wizard = self.env['stock.backorder.confirmation'].with_context(res.get('context', {})).create({})
+                    wizard.process()
+                elif isinstance(res, dict) and res.get('res_model') == 'stock.immediate.transfer':
+                    wizard = self.env['stock.immediate.transfer'].with_context(res.get('context', {})).create({})
+                    wizard.process()
+                elif isinstance(res, dict):
+                    # Unhandled wizard, fail safely
+                    raise exceptions.UserError(_("Unhandled validation wizard for %s. Please validate manually.") % picking.name)
+
+            # Final check: Ensure all pickings reached a terminal state
+            if any(p.state not in ['done', 'cancel'] for p in route.picking_ids):
+                raise exceptions.UserError(_("Cannot complete route: not all pickings reached a terminal state (done/cancel)."))
+
             route.state = 'done'
-            for picking in route.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel']):
-                picking.button_validate()
-                
-                # Automatically trigger invoice creation if linked to a sale order
-                if hasattr(picking, 'sale_id') and picking.sale_id:
-                    try:
-                        picking.sale_id._create_invoices()
-                    except Exception as e:
-                        # Log error but don't block delivery completion
-                        route.message_post(body=f"Could not automatically create invoice for {picking.name}: {str(e)}")
-                
+            
             # Completion notification
             channel = self.env['8848.communication.channel'].search([('code', '=', 'portal')], limit=1)
             if channel:
@@ -86,6 +114,44 @@ class DeliveryRoute(models.Model):
                             'body': f"<p>Your delivery has been marked as complete.</p>",
                             'status': 'queued',
                         })
+            
+            # Trigger initial invoice attempt
+            route.invoice_status = 'pending'
+            route.action_retry_invoice()
+
+    def action_retry_invoice(self):
+        if not (self.env.user.has_group('8848_security.group_8848_acc_manager') or self.env.user.has_group('8848_security.group_8848_ops_manager') or self.env.user.has_group('account.group_account_manager')):
+            raise exceptions.AccessError(_("Only Accounts or Operations Managers can retry invoice generation."))
+            
+        for route in self:
+            if route.invoice_status == 'created':
+                continue
+                
+            route.invoice_attempt_count += 1
+            success = True
+            
+            for picking in route.picking_ids:
+                if hasattr(picking, 'sale_id') and picking.sale_id:
+                    try:
+                        # Idempotent: _create_invoices does not duplicate existing invoices for delivered quantities
+                        picking.sale_id._create_invoices()
+                    except Exception as e:
+                        success = False
+                        route.last_invoice_error = str(e)
+                        route.message_post(body=f"Failed to create invoice for {picking.name}: {str(e)}")
+                        
+            if success:
+                route.invoice_status = 'created'
+                route.last_invoice_error = False
+            else:
+                route.invoice_status = 'failed'
+
+    def unlink(self):
+        for route in self:
+            if route.state == 'done':
+                if not self.env.user.has_group('base.group_system'):
+                    raise exceptions.AccessError(_("Completed delivery routes cannot be deleted by ordinary users."))
+        return super().unlink()
 
     def action_cancel(self):
         for route in self:

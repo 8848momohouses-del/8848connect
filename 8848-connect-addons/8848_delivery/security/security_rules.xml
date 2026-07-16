@@ -6,7 +6,7 @@
             <field name="name">Delivery Route: Driver sees only own</field>
             <field name="model_id" ref="model_8848_delivery_route"/>
             <field name="domain_force">[('driver_id', '=', user.id)]</field>
-            <field name="groups" eval="[(4, ref('8848_security.group_8848_driver'))]"/>
+            <field name="groups" eval="[(4, ref('8848_driver.group_8848_driver'))]"/>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="False"/>
