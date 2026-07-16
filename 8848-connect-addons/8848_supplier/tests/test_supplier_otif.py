@@ -13,7 +13,8 @@ class TestSupplierOTIF(TransactionCase):
         
         self.product = self.env['product.product'].create({
             'name': 'Test Product',
-            'type': 'product'
+            'type': 'consu',
+            'is_storable': True
         })
 
     def test_otif_calculation(self):

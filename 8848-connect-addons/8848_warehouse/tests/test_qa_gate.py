@@ -7,7 +7,8 @@ class TestQAGate(TransactionCase):
         super(TestQAGate, self).setUp()
         self.product = self.env['product.product'].create({
             'name': 'Test QA Product',
-            'type': 'product',
+            'type': 'consu',
+            'is_storable': True,
             'tracking': 'lot',
         })
         self.lot = self.env['stock.lot'].create({

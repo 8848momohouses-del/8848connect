@@ -4,7 +4,7 @@
     'version': '1.0',
     'category': 'Purchases',
     'summary': 'Manage supplier quality ratings and on-time delivery.',
-    'depends': ['contacts', 'purchase', 'stock'],
+    'depends': ['contacts', 'purchase', 'stock', 'purchase_stock'],
     'data': [
         'views/res_partner_views.xml',
     ],

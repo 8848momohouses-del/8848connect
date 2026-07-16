@@ -11,7 +11,7 @@ class TestDeliveryRouting(TransactionCase):
         })
         
         self.partner = self.env['res.partner'].create({'name': 'Delivery Customer'})
-        self.product = self.env['product.product'].create({'name': 'Momo', 'type': 'product'})
+        self.product = self.env['product.product'].create({'name': 'Momo', 'type': 'consu', 'is_storable': True})
         
         self.picking_type_out = self.env.ref('stock.picking_type_out')
         

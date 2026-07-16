@@ -6,7 +6,8 @@ class TestFactoryQA(TransactionCase):
         super(TestFactoryQA, self).setUp()
         self.product = self.env['product.product'].create({
             'name': 'Momo',
-            'type': 'product',
+            'type': 'consu',
+            'is_storable': True,
             'tracking': 'lot',
         })
         self.bom = self.env['mrp.bom'].create({
