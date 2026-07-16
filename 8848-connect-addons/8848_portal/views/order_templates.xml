@@ -5,6 +5,19 @@
         <template id="portal_franchise_catalogue" name="Franchise Catalogue">
             <t t-call="portal.portal_layout">
                 <div class="container mt-4">
+                    <t t-if="draft_order">
+                        <div class="alert alert-warning d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>You have an active draft order (<t t-esc="draft_order.name"/>).</strong>
+                                <span>Total: $<t t-esc="'%.2f' % draft_order.amount_total"/></span>
+                            </div>
+                            <form action="/my/orders/cart/submit" method="post" class="m-0">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="order_id" t-att-value="draft_order.id"/>
+                                <button type="submit" class="btn btn-success btn-sm">Submit for Approval</button>
+                            </form>
+                        </div>
+                    </t>
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3>Factory Replenishment</h3>
                         <a href="/my/franchise" class="btn btn-outline-secondary">Back to Dashboard</a>

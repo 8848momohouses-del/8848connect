@@ -34,11 +34,75 @@ class FranchiseOrderPortal(http.Controller):
             else:
                 price = product.list_price
             product_prices[product.id] = price
+            
+        # Get current draft order
+        draft_order = request.env['sale.order'].sudo().search([
+            ('partner_id', '=', active_id),
+            ('state', 'in', ['draft', 'sent']),
+            ('approval_state', '=', 'draft')
+        ], limit=1)
 
         values = {
             'active_franchise': active_franchise,
             'products': products,
             'product_prices': product_prices,
+            'draft_order': draft_order,
             'page_name': 'franchise_catalogue',
         }
         return request.render("8848_portal.portal_franchise_catalogue", values)
+
+    @http.route(['/my/orders/cart/update'], type='http', auth="user", website=True, methods=['POST'])
+    def cart_update(self, product_id, quantity, **kw):
+        product_id = int(product_id)
+        quantity = float(quantity)
+        
+        permitted_ids = request.env.user._get_permitted_franchise_ids('order')
+        if not permitted_ids:
+            return request.redirect('/my/franchise')
+            
+        active_id = request.session.get('active_franchise_id')
+        if not active_id or active_id not in permitted_ids:
+            return request.redirect('/my/franchise')
+            
+        active_franchise = request.env['res.partner'].sudo().browse(active_id)
+        
+        draft_order = request.env['sale.order'].sudo().search([
+            ('partner_id', '=', active_id),
+            ('state', 'in', ['draft', 'sent']),
+            ('approval_state', '=', 'draft')
+        ], limit=1)
+        
+        if not draft_order:
+            draft_order = request.env['sale.order'].sudo().create({
+                'partner_id': active_id,
+                'approval_state': 'draft'
+            })
+            
+        order_line = draft_order.order_line.filtered(lambda l: l.product_id.id == product_id)
+        if order_line:
+            order_line.product_uom_qty += quantity
+        else:
+            # Force server-side price calculation by letting onchange trigger, 
+            # or we manually fetch it here securely.
+            request.env['sale.order.line'].sudo().create({
+                'order_id': draft_order.id,
+                'product_id': product_id,
+                'product_uom_qty': quantity,
+            })
+            
+        return request.redirect('/my/orders/new')
+        
+    @http.route(['/my/orders/cart/submit'], type='http', auth="user", website=True, methods=['POST'])
+    def cart_submit(self, order_id, **kw):
+        order_id = int(order_id)
+        permitted_ids = request.env.user._get_permitted_franchise_ids('order')
+        
+        order = request.env['sale.order'].sudo().browse(order_id)
+        if not order.exists() or order.partner_id.id not in permitted_ids or order.approval_state != 'draft':
+            return request.redirect('/my/franchise')
+            
+        # Transition state to pending approval
+        order.sudo().write({'approval_state': 'pending'})
+        order.message_post(body="Order submitted from Franchise Portal.")
+        
+        return request.redirect('/my/orders')
