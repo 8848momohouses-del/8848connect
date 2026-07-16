@@ -24,13 +24,14 @@ class TestFactoryQA(TransactionCase):
         production.action_confirm()
         
         # Add scrap
+        scrap_loc = self.env['stock.location'].search([('scrap_location', '=', True)], limit=1)
         scrap = self.env['stock.scrap'].create({
             'production_id': production.id,
             'product_id': self.product.id,
             'scrap_qty': 2.0,
             'product_uom_id': self.product.uom_id.id,
             'location_id': production.location_src_id.id,
-            'scrap_location_id': self.env.ref('stock.stock_location_scrapped').id,
+            'scrap_location_id': scrap_loc.id,
         })
         scrap.action_validate()
         

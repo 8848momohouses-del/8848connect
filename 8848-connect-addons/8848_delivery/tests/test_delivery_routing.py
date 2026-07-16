@@ -6,8 +6,7 @@ class TestDeliveryRouting(TransactionCase):
         super(TestDeliveryRouting, self).setUp()
         
         self.driver = self.env['hr.employee'].create({
-            'name': 'Test Driver',
-            'is_driver': True
+            'name': 'Test Driver'
         })
         
         self.partner = self.env['res.partner'].create({'name': 'Delivery Customer'})
