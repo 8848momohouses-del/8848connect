@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_api_request_log_form" model="ir.ui.view">
+        <field name="name">8848.api.request.log.form</field>
+        <field name="model">8848.api.request.log</field>
+        <field name="arch" type="xml">
+            <form string="API Request Log" create="false" edit="false">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="processing,success,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Core Metadata">
+                            <field name="api_client_id"/>
+                            <field name="route_code"/>
+                            <field name="http_method"/>
+                        </group>
+                        <group string="Idempotency">
+                            <field name="idempotency_key"/>
+                            <field name="request_body_hash"/>
+                        </group>
+                        <group string="Processing &amp; Network">
+                            <field name="started_at"/>
+                            <field name="completed_at"/>
+                            <field name="source_ip"/>
+                        </group>
+                        <group string="Response">
+                            <field name="response_status"/>
+                            <field name="target_reference"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Response Payload" invisible="state != 'success'">
+                            <field name="safe_response_payload" widget="text"/>
+                        </page>
+                        <page string="Error Message" invisible="state != 'error'">
+                            <field name="safe_error_message" widget="text"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_api_request_log_list" model="ir.ui.view">
+        <field name="name">8848.api.request.log.list</field>
+        <field name="model">8848.api.request.log</field>
+        <field name="arch" type="xml">
+            <list string="API Request Logs" create="false" edit="false" default_order="started_at desc">
+                <field name="name"/>
+                <field name="api_client_id"/>
+                <field name="route_code"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state == 'processing'" 
+                       decoration-success="state == 'success'" 
+                       decoration-danger="state == 'error'"/>
+                <field name="response_status"/>
+                <field name="started_at"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_api_request_log" model="ir.actions.act_window">
+        <field name="name">API Request Logs</field>
+        <field name="res_model">8848.api.request.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

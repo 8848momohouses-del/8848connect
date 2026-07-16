@@ -3,6 +3,7 @@ from odoo.exceptions import ValidationError
 
 class WorkflowTransition(models.Model):
     _name = '8848.workflow.transition'
+    _table = 'connect_workflow_transition'
     _description = 'Workflow Transition'
     _order = 'sequence, id'
 

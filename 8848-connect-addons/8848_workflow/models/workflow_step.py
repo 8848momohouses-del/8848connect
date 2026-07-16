@@ -2,6 +2,7 @@ from odoo import api, fields, models
 
 class WorkflowStep(models.Model):
     _name = '8848.workflow.step'
+    _table = 'connect_workflow_step'
     _description = 'Workflow Step'
     _rec_name = 'name'
     _order = 'sequence, id'
@@ -25,7 +26,7 @@ class WorkflowStep(models.Model):
     entry_action_id = fields.Many2one('ir.actions.server', string='Entry Action', help="Server action executed when entering this step")
     exit_action_id = fields.Many2one('ir.actions.server', string='Exit Action', help="Server action executed when leaving this step")
     escalation_action_id = fields.Many2one('ir.actions.server', string='Escalation Action', help="Server action executed when SLA is breached")
-
-    _sql_constraints = [
-        ('code_workflow_unique', 'unique(code, workflow_id)', 'Step code must be unique per workflow!')
-    ]
+    _constraint_code_workflow_unique = models.Constraint(
+        "unique(code, workflow_id)",
+        "Step code must be unique per workflow!"
+    )

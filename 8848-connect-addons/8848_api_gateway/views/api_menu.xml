@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_8848_api_root" 
+              name="API Gateway" 
+              groups="8848_api_gateway.group_8848_api_admin" 
+              sequence="100"/>
+              
+    <menuitem id="menu_8848_api_clients" 
+              name="API Clients" 
+              parent="menu_8848_api_root" 
+              action="action_api_client" 
+              sequence="10"/>
+              
+    <menuitem id="menu_8848_api_logs" 
+              name="Request Logs" 
+              parent="menu_8848_api_root" 
+              action="action_api_request_log" 
+              sequence="20"/>
+</odoo>

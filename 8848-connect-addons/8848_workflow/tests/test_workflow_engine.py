@@ -121,8 +121,8 @@ class TestWorkflowEngine(TransactionCase):
         basic_user = self.env['res.users'].create({
             'name': 'Basic User',
             'login': 'basic@example.com',
-            'groups_id': [(6, 0, [self.env.ref('base.group_user').id])]
         })
+        basic_user.write({'group_ids': [(4, self.env.ref('base.group_user').id)]})
         
         instance = self.workflow_def.action_instantiate('res.partner', self.test_partner.id)
         
@@ -131,7 +131,7 @@ class TestWorkflowEngine(TransactionCase):
             instance.with_user(basic_user).execute_transition(secure_trans)
             
         # Add the manager group to the user
-        basic_user.write({'groups_id': [(4, manager_group.id)]})
+        basic_user.write({'group_ids': [(4, manager_group.id)]})
         
         # Now it should succeed
         instance.with_user(basic_user).execute_transition(secure_trans)

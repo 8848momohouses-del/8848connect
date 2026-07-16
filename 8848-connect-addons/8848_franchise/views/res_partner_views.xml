@@ -92,7 +92,7 @@
             <field name="name">res.partner.search.franchise</field>
             <field name="model">res.partner</field>
             <field name="arch" type="xml">
-                <search string="Franchisees">
+                <search>
                     <field name="name"/>
                     <field name="store_id"/>
                     <field name="territory"/>
@@ -106,14 +106,14 @@
                             domain="[('franchise_status', '=', 'active')]"/>
                     <filter string="Suspended" name="status_suspended"
                             domain="[('franchise_status', '=', 'suspended')]"/>
-                    <group colspan="16">
+                    
                         <filter string="Lifecycle Stage" name="group_stage"
                                 context="{'group_by': 'franchise_stage_id'}"/>
                         <filter string="Territory" name="group_territory"
                                 context="{'group_by': 'territory'}"/>
                         <filter string="Status" name="group_status"
                                 context="{'group_by': 'franchise_status'}"/>
-                    </group>
+                    
                 </search>
             </field>
         </record>

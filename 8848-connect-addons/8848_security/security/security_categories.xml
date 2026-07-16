@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Main Application Category for 8848 Connect -->
-        <record model="ir.module.category" id="module_category_8848_connect">
-            <field name="name">8848 Connect</field>
-            <field name="description">8848 Business Suite Roles</field>
-            <field name="sequence">10</field>
-        </record>
-
         <record model="res.groups.privilege" id="res_groups_privilege_8848_connect">
             <field name="name">8848 Connect Roles</field>
-            <field name="category_id" ref="module_category_8848_connect"/>
         </record>
     </data>
 </odoo>

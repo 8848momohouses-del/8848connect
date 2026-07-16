@@ -1,8 +1,9 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, AccessError
 
 class WorkflowInstance(models.Model):
     _name = '8848.workflow.instance'
+    _table = 'connect_workflow_instance'
     _description = 'Workflow Instance'
     _rec_name = 'reference'
     _order = 'id desc'
@@ -42,12 +43,10 @@ class WorkflowInstance(models.Model):
                 record.reference = f"{record.workflow_id.code}-{record.res_model}-{record.res_id}"
             else:
                 record.reference = _("New Instance")
-
-    _sql_constraints = [
-        ('unique_active_instance', 
-         'unique(workflow_id, res_model, res_id, active)', 
-         'A business record can only have one active instance of a specific workflow!')
-    ]
+    _constraint_unique_active_instance = models.Constraint(
+        "unique(workflow_id, res_model, res_id, active)",
+        "A business record can only have one active instance of a specific workflow!"
+    )
 
     def _get_business_record(self):
         self.ensure_one()
@@ -65,9 +64,11 @@ class WorkflowInstance(models.Model):
                 raise ValidationError(_("Workflow '%s' has no initial step defined.") % instance.workflow_id.name)
             
             # Start workflow
-            instance.current_step_id = instance.workflow_id.initial_step_id
-            instance.entered_current_step_at = fields.Datetime.now()
-            instance.escalation_triggered = False
+            instance.sudo().write({
+                'current_step_id': instance.workflow_id.initial_step_id.id,
+                'entered_current_step_at': fields.Datetime.now(),
+                'escalation_triggered': False,
+            })
             
             # Execute destination step entry action
             if instance.current_step_id.entry_action_id:
@@ -96,7 +97,7 @@ class WorkflowInstance(models.Model):
         for instance in self:
             if instance.state == 'completed':
                 raise ValidationError(_("Cannot cancel a completed workflow."))
-            instance.write({
+            instance.sudo().write({
                 'state': 'cancelled',
                 'active': False,
                 'completed_at': fields.Datetime.now()
@@ -120,7 +121,7 @@ class WorkflowInstance(models.Model):
         if step.responsible_user_id:
             users_to_assign |= step.responsible_user_id
         elif step.responsible_group_id:
-            users_to_assign |= step.responsible_group_id.users
+            users_to_assign |= step.responsible_group_id.user_ids
             
         model_id = self.env['ir.model']._get_id(self.res_model)
         for user in users_to_assign:
@@ -152,11 +153,12 @@ class WorkflowInstance(models.Model):
         if self.current_step_id != transition.source_step_id:
             raise ValidationError(_("Transition is not valid from the current step."))
             
-        # Security check: Does the user have the required group?
         if transition.required_group_id:
-            if not self.env.user.has_group(transition.required_group_id.get_external_id()):
+            ext_id_dict = transition.required_group_id.get_external_id()
+            ext_id = ext_id_dict.get(transition.required_group_id.id, '')
+            if not ext_id or not self.env.user.has_group(ext_id):
                 # Fallback to direct check if external ID is tricky
-                if self.env.user not in transition.required_group_id.users:
+                if self.env.user not in transition.required_group_id.user_ids:
                     raise AccessError(_("You do not have the required permissions (%s) to perform this transition.") % transition.required_group_id.name)
             
         record = self._get_business_record()
@@ -180,9 +182,11 @@ class WorkflowInstance(models.Model):
                 raise ValidationError(_("Exit action failed on step %s: %s") % (transition.source_step_id.name, e))
 
         # Move to destination
-        self.current_step_id = transition.destination_step_id
-        self.entered_current_step_at = fields.Datetime.now()
-        self.escalation_triggered = False
+        self.sudo().write({
+            'current_step_id': transition.destination_step_id.id,
+            'entered_current_step_at': fields.Datetime.now(),
+            'escalation_triggered': False,
+        })
         
         # Create activities for destination step
         self._create_step_activities(self.current_step_id)
@@ -199,7 +203,7 @@ class WorkflowInstance(models.Model):
                 raise ValidationError(_("Entry action failed on step %s: %s") % (self.current_step_id.name, e))
         
         if self.current_step_id.step_type == 'end':
-            self.write({
+            self.sudo().write({
                 'state': 'completed',
                 'active': False,
                 'completed_at': fields.Datetime.now()

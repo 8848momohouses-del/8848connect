@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class CommunicationChannel(models.Model):
     _name = '8848.communication.channel'
+    _table = 'connect_communication_channel'
     _description = 'Communication Channel'
     _order = 'sequence, id'
 
@@ -16,7 +17,7 @@ class CommunicationChannel(models.Model):
     is_active = fields.Boolean(string='Active', default=True)
     sequence = fields.Integer(string='Sequence', default=10)
     provider_config = fields.Text(string='Provider Configuration (JSON)', help='JSON configuration for the channel provider.')
-
-    _sql_constraints = [
-        ('code_uniq', 'unique (code)', 'The channel code must be unique!')
-    ]
+    _constraint_code_uniq = models.Constraint(
+        "unique (code)",
+        "The channel code must be unique!"
+    )

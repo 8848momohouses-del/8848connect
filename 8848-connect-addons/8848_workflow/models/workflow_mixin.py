@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 
 class WorkflowMixin(models.AbstractModel):
     _name = '8848.workflow.mixin'
+    _table = 'connect_workflow_mixin'
     _description = 'Workflow Mixin'
 
     workflow_count = fields.Integer(compute='_compute_workflow_count', string='Workflow Count')
