@@ -13,6 +13,7 @@
         'views/product_template_views.xml',
         'views/portal_templates.xml',
         'views/order_templates.xml',
+        'views/delivery_templates.xml',
     ],
     'installable': True,
     'application': False,

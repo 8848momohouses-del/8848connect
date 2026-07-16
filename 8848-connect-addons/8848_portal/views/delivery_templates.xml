@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Delivery List -->
+        <template id="portal_franchise_deliveries" name="Deliveries">
+            <t t-call="portal.portal_layout">
+                <div class="container mt-4">
+                    <h3 class="mb-4">Deliveries</h3>
+                    <div class="list-group">
+                        <t t-foreach="deliveries" t-as="delivery">
+                            <a t-attf-href="/my/deliveries/{{delivery.id}}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1"><t t-esc="delivery.name"/></h5>
+                                    <small class="text-muted">Scheduled: <t t-esc="delivery.scheduled_date" t-options="{'widget': 'date'}"/></small>
+                                </div>
+                                <div>
+                                    <span class="badge bg-info"><t t-esc="delivery.state"/></span>
+                                </div>
+                            </a>
+                        </t>
+                        <t t-if="not deliveries">
+                            <div class="alert alert-info">You have no deliveries.</div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </template>
+        
+        <!-- Delivery Details -->
+        <template id="portal_franchise_delivery_details" name="Delivery Details">
+            <t t-call="portal.portal_layout">
+                <div class="container mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>Delivery <t t-esc="delivery.name"/></h3>
+                        <a href="/my/deliveries" class="btn btn-outline-secondary">Back to List</a>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Scheduled Date:</strong> <t t-esc="delivery.scheduled_date" t-options="{'widget': 'datetime'}"/><br/>
+                                    <strong>Status:</strong> <span class="badge bg-info"><t t-esc="delivery.state"/></span>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <strong>Source Document:</strong> <t t-esc="delivery.origin"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Proof of Delivery Section -->
+                    <t t-if="stop and stop.state == 'delivered'">
+                        <div class="card mb-4 border-success">
+                            <div class="card-header bg-success text-white">
+                                <i class="fa fa-check-circle me-2"/> Proof of Delivery
+                            </div>
+                            <div class="card-body row">
+                                <div class="col-md-6">
+                                    <p><strong>Delivered At:</strong> <t t-esc="stop.actual_arrival" t-options="{'widget': 'datetime'}"/></p>
+                                    <p t-if="stop.pod_signature"><strong>Signature:</strong> Captured</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <!-- Driver Info proxy (no direct route access required) -->
+                                    <p><strong>Driver:</strong> <t t-esc="stop.route_id.driver_id.name"/></p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <h4>Items</h4>
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-end">Demand</th>
+                                <th class="text-end">Done</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="delivery.move_ids_without_package" t-as="move">
+                                <tr>
+                                    <td><t t-esc="move.product_id.name"/></td>
+                                    <td class="text-end"><t t-esc="move.product_uom_qty"/> <t t-esc="move.product_uom.name"/></td>
+                                    <td class="text-end"><t t-esc="move.quantity"/> <t t-esc="move.product_uom.name"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
