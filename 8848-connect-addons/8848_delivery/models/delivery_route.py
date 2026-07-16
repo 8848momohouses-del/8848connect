@@ -34,6 +34,8 @@ class DeliveryRoute(models.Model):
     def action_done(self):
         for route in self:
             route.state = 'done'
+            for picking in route.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel']):
+                picking.button_validate()
 
     def action_cancel(self):
         for route in self:

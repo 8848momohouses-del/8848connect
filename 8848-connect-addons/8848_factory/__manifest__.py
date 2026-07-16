@@ -10,7 +10,9 @@
     """,
     'author': '8848 Momo House',
     'depends': ['8848_inventory', 'mrp'],
-    'data': [],
+    'data': [
+        'views/mrp_production_views.xml',
+    ],
     'installable': True,
     'application': False,
     'auto_install': False,
