@@ -2,7 +2,7 @@ name: install-test
 
 on:
   push:
-    branches: [main, staging, 'feature/8848-api-gateway']
+    branches: [main, staging, 'feature/8848-api-gateway', 'feature/8848-supply-chain']
   pull_request:
 
 jobs:
@@ -31,8 +31,8 @@ jobs:
             --db_host=postgres --db_user=odoo --db_password=odoo \
             --addons-path=/usr/lib/python3/dist-packages/odoo/addons,$GITHUB_WORKSPACE/8848-connect-addons \
             -d ci_test \
-            -i 8848_baseline_tests,8848_crm,8848_workflow,8848_communication,8848_api_gateway \
-            --test-enable --test-tags 8848_api_gateway,8848_crm,8848_workflow,8848_communication,baseline_8848,security,portal \
+            -i 8848_baseline_tests,8848_crm,8848_workflow,8848_communication,8848_api_gateway,8848_supplier,8848_factory,8848_warehouse,8848_delivery \
+            --test-enable --test-tags 8848_api_gateway,8848_crm,8848_workflow,8848_communication,baseline_8848,security,portal,8848_supplier,8848_factory,8848_warehouse,8848_delivery \
             --stop-after-init \
             --log-level=warn
       - name: Fail on test errors in exit status
