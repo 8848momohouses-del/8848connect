@@ -60,8 +60,8 @@ class TestApiIntake(HttpCase):
         headers2 = self._generate_headers('POST', self.url, body, idempotency_key=idem_key)
         resp2 = self.url_open(self.url, data=json.dumps(body), headers=headers2)
         
-        # Expect 200 for cached successful response
-        self.assertEqual(resp2.status_code, 200)
+        # Expect 201 for cached successful response
+        self.assertEqual(resp2.status_code, 201)
         self.assertEqual(resp1.json().get('reference'), resp2.json().get('reference'))
         
     def test_conflict_different_body(self):

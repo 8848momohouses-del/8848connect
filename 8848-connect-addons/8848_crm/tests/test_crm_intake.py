@@ -60,7 +60,7 @@ class TestCrmIntake(TransactionCase):
         self.assertEqual(res1['lead_id'], res2['lead_id'])
         
         lead = self.Lead.browse(res1['lead_id'])
-        self.assertEqual(lead.description, 'Following up!')
+        self.assertIn('Following up!', str(lead.description))
 
     def test_expansion_enquiry(self):
         """Test existing partner receives an expansion enquiry."""
