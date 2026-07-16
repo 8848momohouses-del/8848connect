@@ -64,9 +64,11 @@ class WorkflowInstance(models.Model):
                 raise ValidationError(_("Workflow '%s' has no initial step defined.") % instance.workflow_id.name)
             
             # Start workflow
-            instance.current_step_id = instance.workflow_id.initial_step_id
-            instance.entered_current_step_at = fields.Datetime.now()
-            instance.escalation_triggered = False
+            instance.sudo().write({
+                'current_step_id': instance.workflow_id.initial_step_id.id,
+                'entered_current_step_at': fields.Datetime.now(),
+                'escalation_triggered': False,
+            })
             
             # Execute destination step entry action
             if instance.current_step_id.entry_action_id:
@@ -95,7 +97,7 @@ class WorkflowInstance(models.Model):
         for instance in self:
             if instance.state == 'completed':
                 raise ValidationError(_("Cannot cancel a completed workflow."))
-            instance.write({
+            instance.sudo().write({
                 'state': 'cancelled',
                 'active': False,
                 'completed_at': fields.Datetime.now()
@@ -180,9 +182,11 @@ class WorkflowInstance(models.Model):
                 raise ValidationError(_("Exit action failed on step %s: %s") % (transition.source_step_id.name, e))
 
         # Move to destination
-        self.current_step_id = transition.destination_step_id
-        self.entered_current_step_at = fields.Datetime.now()
-        self.escalation_triggered = False
+        self.sudo().write({
+            'current_step_id': transition.destination_step_id.id,
+            'entered_current_step_at': fields.Datetime.now(),
+            'escalation_triggered': False,
+        })
         
         # Create activities for destination step
         self._create_step_activities(self.current_step_id)
@@ -199,7 +203,7 @@ class WorkflowInstance(models.Model):
                 raise ValidationError(_("Entry action failed on step %s: %s") % (self.current_step_id.name, e))
         
         if self.current_step_id.step_type == 'end':
-            self.write({
+            self.sudo().write({
                 'state': 'completed',
                 'active': False,
                 'completed_at': fields.Datetime.now()
