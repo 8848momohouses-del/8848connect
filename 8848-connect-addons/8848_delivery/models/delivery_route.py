@@ -64,6 +64,14 @@ class DeliveryRoute(models.Model):
             for picking in route.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel']):
                 picking.button_validate()
                 
+                # Automatically trigger invoice creation if linked to a sale order
+                if hasattr(picking, 'sale_id') and picking.sale_id:
+                    try:
+                        picking.sale_id._create_invoices()
+                    except Exception as e:
+                        # Log error but don't block delivery completion
+                        route.message_post(body=f"Could not automatically create invoice for {picking.name}: {str(e)}")
+                
             # Completion notification
             channel = self.env['8848.communication.channel'].search([('code', '=', 'portal')], limit=1)
             if channel:
