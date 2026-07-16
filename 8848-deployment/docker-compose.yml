@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: odoo:17.0
+    image: odoo:19.0
     container_name: 8848_odoo
     depends_on:
       - db

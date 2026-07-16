@@ -9,7 +9,7 @@ jobs:
   fresh-db-install:
     runs-on: ubuntu-latest
     container:
-      image: odoo:19
+      image: odoo:19.0
       options: --user root
     services:
       postgres:
@@ -25,6 +25,9 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v4
+      - name: Assert Odoo 19 environment
+        run: |
+          odoo --version | grep 'Odoo Server 19.0' || (echo "::error::Deployment mismatch: Expected Odoo 19" && exit 1)
       - name: Install all 8848 modules on an empty database and run baseline tests
         run: |
           odoo \
