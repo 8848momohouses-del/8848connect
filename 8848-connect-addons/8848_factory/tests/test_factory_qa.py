@@ -23,8 +23,10 @@ class TestFactoryQA(TransactionCase):
         })
         production.action_confirm()
         
-        # Add scrap
-        scrap_loc = self.env['stock.location'].search([('scrap_location', '=', True)], limit=1)
+        scrap_loc = self.env['stock.location'].create({
+            'name': 'Test Scrap Location',
+            'usage': 'inventory', 
+        })
         scrap = self.env['stock.scrap'].create({
             'production_id': production.id,
             'product_id': self.product.id,

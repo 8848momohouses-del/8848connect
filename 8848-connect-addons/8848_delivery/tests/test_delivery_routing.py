@@ -10,7 +10,7 @@ class TestDeliveryRouting(TransactionCase):
         })
         
         self.partner = self.env['res.partner'].create({'name': 'Delivery Customer'})
-        self.product = self.env['product.product'].create({'name': 'Momo', 'type': 'consu', 'is_storable': True})
+        self.product = self.env['product.product'].create({'name': 'Momo', 'type': 'consu', 'is_storable': False})
         
         self.picking_type_out = self.env.ref('stock.picking_type_out')
         
@@ -42,13 +42,10 @@ class TestDeliveryRouting(TransactionCase):
         self.assertEqual(route.state, 'in_transit')
         
         # We need stock to validate, so we bypass strict validation for unit test or mock it.
-        # But we can test if action_done attempts to validate pickings.
-        # Calling route.action_done() will call picking.button_validate() which will fail without qty done.
-        # We'll set qty done on move lines.
-        
         self.picking.action_assign()
-        for move_line in self.picking.move_line_ids:
-            move_line.quantity = 1
+        for move in self.picking.move_ids:
+            move.quantity = 1
+            move.picked = True
             
         route.action_done()
         self.assertEqual(route.state, 'done')
