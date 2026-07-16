@@ -44,7 +44,7 @@
                             <div class="card h-100 shadow-sm border-0">
                                 <div class="card-body text-center">
                                     <h5 class="text-muted mb-3">Pending Deliveries</h5>
-                                    <h2 class="text-primary fw-bold"><t t-esc="len(pending_deliveries)"/></h2>
+                                    <h2 class="text-primary fw-bold"><a href="/my/deliveries" class="text-decoration-none"><t t-esc="len(pending_deliveries)"/></a></h2>
                                 </div>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                             <div class="card h-100 shadow-sm border-0">
                                 <div class="card-body text-center">
                                     <h5 class="text-muted mb-3">Outstanding Balance</h5>
-                                    <h2 class="text-danger fw-bold">$<t t-esc="'%.2f' % outstanding_balance"/></h2>
+                                    <h2 class="text-danger fw-bold"><a href="/my/invoices" class="text-danger text-decoration-none">$<t t-esc="'%.2f' % outstanding_balance"/></a></h2>
                                 </div>
                             </div>
                         </div>
@@ -62,13 +62,40 @@
                             <div class="card h-100 shadow-sm border-0">
                                 <div class="card-body text-center">
                                     <h5 class="text-muted mb-3">Statements</h5>
-                                    <h2 class="text-primary fw-bold"><t t-esc="len(statements)"/></h2>
+                                    <h2 class="text-primary fw-bold"><a href="/my/statements" class="text-decoration-none"><t t-esc="len(statements)"/></a></h2>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-3 mb-3"><a href="/my/orders/new" class="btn btn-outline-primary w-100 py-3"><i class="fa fa-shopping-cart d-block mb-2 fa-2x"/>Order Stock</a></div>
+                        <div class="col-md-3 mb-3"><a href="/my/orders" class="btn btn-outline-primary w-100 py-3"><i class="fa fa-history d-block mb-2 fa-2x"/>Order History</a></div>
+                        <div class="col-md-3 mb-3"><a href="/my/support" class="btn btn-outline-primary w-100 py-3"><i class="fa fa-life-ring d-block mb-2 fa-2x"/>Support Tickets</a></div>
+                        <div class="col-md-3 mb-3"><a href="/my/documents" class="btn btn-outline-primary w-100 py-3"><i class="fa fa-file-text-o d-block mb-2 fa-2x"/>Documents</a></div>
+                    </div>
                 </div>
             </t>
+        </template>
+        
+        <!-- Portal Menu Navigation -->
+        <template id="portal_my_home_menu_franchise" name="Portal Menu Franchise" inherit_id="portal.portal_my_home_menu">
+            <xpath expr="//div[@id='o_portal_my_home_menu']" position="inside">
+                <t t-if="request.env.user._get_permitted_franchise_ids()">
+                    <a href="/my/franchise" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fa fa-briefcase fa-fw me-3"/>Dashboard
+                    </a>
+                    <a href="/my/orders/new" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fa fa-shopping-cart fa-fw me-3"/>Order Stock
+                    </a>
+                    <a href="/my/deliveries" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fa fa-truck fa-fw me-3"/>Deliveries
+                    </a>
+                    <a href="/my/support" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fa fa-life-ring fa-fw me-3"/>Support
+                    </a>
+                </t>
+            </xpath>
         </template>
     </data>
 </odoo>
