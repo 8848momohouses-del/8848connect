@@ -119,7 +119,7 @@ class WorkflowInstance(models.Model):
         if step.responsible_user_id:
             users_to_assign |= step.responsible_user_id
         elif step.responsible_group_id:
-            users_to_assign |= step.responsible_group_id.users
+            users_to_assign |= step.responsible_group_id.user_ids
             
         model_id = self.env['ir.model']._get_id(self.res_model)
         for user in users_to_assign:
@@ -151,11 +151,12 @@ class WorkflowInstance(models.Model):
         if self.current_step_id != transition.source_step_id:
             raise ValidationError(_("Transition is not valid from the current step."))
             
-        # Security check: Does the user have the required group?
         if transition.required_group_id:
-            if not self.env.user.has_group(transition.required_group_id.get_external_id()):
+            ext_id_dict = transition.required_group_id.get_external_id()
+            ext_id = ext_id_dict.get(transition.required_group_id.id, '')
+            if not ext_id or not self.env.user.has_group(ext_id):
                 # Fallback to direct check if external ID is tricky
-                if self.env.user not in transition.required_group_id.users:
+                if self.env.user not in transition.required_group_id.user_ids:
                     raise AccessError(_("You do not have the required permissions (%s) to perform this transition.") % transition.required_group_id.name)
             
         record = self._get_business_record()
