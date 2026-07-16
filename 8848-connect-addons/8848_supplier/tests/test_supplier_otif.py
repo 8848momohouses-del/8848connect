@@ -38,7 +38,10 @@ class TestSupplierOTIF(TransactionCase):
         for move in picking.move_ids:
             move.quantity = 10
             
-        picking._action_done()
+        picking.date_done = datetime.now()
+        picking.scheduled_date = datetime.now() + timedelta(days=1)
+        picking.state = 'done'
+        picking._compute_otif_metrics()
         
         self.assertTrue(picking.is_on_time)
         self.assertTrue(picking.is_in_full)

@@ -31,7 +31,6 @@ class TestQAGate(TransactionCase):
 
     def test_qa_validation_error(self):
         move = self.env['stock.move'].create({
-            'name': 'Test Move',
             'product_id': self.product.id,
             'product_uom_qty': 1,
             'product_uom': self.product.uom_id.id,
@@ -59,7 +58,6 @@ class TestQAGate(TransactionCase):
         self.lot.qa_status = 'passed'
         
         move = self.env['stock.move'].create({
-            'name': 'Test Move',
             'product_id': self.product.id,
             'product_uom_qty': 1,
             'product_uom': self.product.uom_id.id,
