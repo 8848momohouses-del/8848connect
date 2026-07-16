@@ -3,7 +3,7 @@
 - **Current Commit (main):** Completed Milestone 6 (Factory & Supply Chain)
 - **Current Milestone:** [x] Milestone 1.5, [x] Milestone 2, [x] Milestone 3, [x] Milestone 4, [x] Milestone 5, [x] Milestone 6
 - **Current Branch:** feature/milestone-7-franchise-portal
-- **Last Completed Work:** Completed Batch P1 (Existing portal audit, access-ownership contract) and Batch P2 (Portal eligibility, invitations, roles).
+- **Last Completed Work:** Completed Batch P1, P2 and P3 (Secure dashboard and multi-store selector).
 - **Validation Executed:**
   - Automated tests pass for all supply chain models (`8848_supplier`, `8848_factory`, `8848_warehouse`, `8848_delivery`).
   - Final functional regression verification successful.
