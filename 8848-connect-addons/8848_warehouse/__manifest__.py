@@ -9,7 +9,7 @@
         for the food manufacturing and franchise industry.
     """,
     'author': '8848 Momo House',
-    'depends': ['8848_inventory', 'stock', 'product_expiry'],
+    'depends': ['8848_inventory', 'stock', 'product_expiry', '8848_communication'],
     'data': [
         'views/stock_lot_views.xml',
         'views/stock_move_line_views.xml',

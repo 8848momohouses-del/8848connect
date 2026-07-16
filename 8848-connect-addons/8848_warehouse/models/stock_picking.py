@@ -34,6 +34,19 @@ class StockPicking(models.Model):
                 'packed_by': self.env.user.id,
                 'packed_at': fields.Datetime.now()
             })
+            
+            # Queue notification
+            channel = self.env['8848.communication.channel'].search([('code', '=', 'portal')], limit=1)
+            if channel and picking.partner_id:
+                self.env['8848.communication.message'].sudo().create({
+                    'res_model': picking._name,
+                    'res_id': picking.id,
+                    'partner_id': picking.partner_id.id,
+                    'channel_id': channel.id,
+                    'subject': f"Order {picking.origin or picking.name} Packed",
+                    'body': f"<p>Your order {picking.origin or picking.name} has been packed.</p>",
+                    'status': 'queued',
+                })
 
     def button_validate(self):
         for picking in self:

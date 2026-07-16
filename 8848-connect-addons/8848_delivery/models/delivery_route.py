@@ -40,13 +40,44 @@ class DeliveryRoute(models.Model):
 
     def action_start_route(self):
         for route in self:
-            route.state = 'in_transit'
+            self.write({'state': 'in_transit'})
+        
+        # Dispatch notification
+        for route in self:
+            channel = self.env['8848.communication.channel'].search([('code', '=', 'portal')], limit=1)
+            if channel:
+                for picking in route.picking_ids:
+                    if picking.partner_id:
+                        self.env['8848.communication.message'].sudo().create({
+                            'res_model': route._name,
+                            'res_id': route.id,
+                            'partner_id': picking.partner_id.id,
+                            'channel_id': channel.id,
+                            'subject': f"Delivery {route.name} Dispatched",
+                            'body': f"<p>Your delivery is on its way with driver {route.driver_id.name or 'assigned'}.</p>",
+                            'status': 'queued',
+                        })
 
     def action_done(self):
         for route in self:
             route.state = 'done'
             for picking in route.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel']):
                 picking.button_validate()
+                
+            # Completion notification
+            channel = self.env['8848.communication.channel'].search([('code', '=', 'portal')], limit=1)
+            if channel:
+                for picking in route.picking_ids:
+                    if picking.partner_id:
+                        self.env['8848.communication.message'].sudo().create({
+                            'res_model': route._name,
+                            'res_id': route.id,
+                            'partner_id': picking.partner_id.id,
+                            'channel_id': channel.id,
+                            'subject': f"Delivery {route.name} Completed",
+                            'body': f"<p>Your delivery has been marked as complete.</p>",
+                            'status': 'queued',
+                        })
 
     def action_cancel(self):
         for route in self:

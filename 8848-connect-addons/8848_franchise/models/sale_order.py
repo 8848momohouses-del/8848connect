@@ -51,6 +51,19 @@ class SaleOrder(models.Model):
             'approved_by': self.env.user.id,
             'approved_at': fields.Datetime.now()
         })
+        
+        # Queue notification
+        channel = self.env['8848.communication.channel'].search([('code', '=', 'portal')], limit=1)
+        if channel and self.partner_id:
+            self.env['8848.communication.message'].sudo().create({
+                'res_model': self._name,
+                'res_id': self.id,
+                'partner_id': self.partner_id.id,
+                'channel_id': channel.id,
+                'subject': f"Order {self.name} Approved",
+                'body': f"<p>Your order {self.name} has been approved and is being processed.</p>",
+                'status': 'queued',
+            })
 
     def action_reject_order(self):
         self.ensure_one()
