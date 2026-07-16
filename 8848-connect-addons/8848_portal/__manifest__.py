@@ -16,6 +16,7 @@
         'views/delivery_templates.xml',
         'views/finance_templates.xml',
         'views/support_templates.xml',
+        'views/profile_templates.xml',
     ],
     'installable': True,
     'application': False,
