@@ -106,3 +106,75 @@ class FranchiseOrderPortal(http.Controller):
         order.message_post(body="Order submitted from Franchise Portal.")
         
         return request.redirect('/my/orders')
+
+    @http.route(['/my/orders'], type='http', auth="user", website=True)
+    def order_history(self, **kw):
+        permitted_ids = request.env.user._get_permitted_franchise_ids('order')
+        if not permitted_ids:
+            return request.redirect('/my/franchise')
+            
+        active_id = request.session.get('active_franchise_id')
+        if not active_id or active_id not in permitted_ids:
+            return request.redirect('/my/franchise')
+            
+        orders = request.env['sale.order'].sudo().search([
+            ('partner_id', '=', active_id),
+            ('approval_state', '!=', 'draft')
+        ], order='date_order desc')
+        
+        values = {
+            'orders': orders,
+            'page_name': 'franchise_order_history',
+        }
+        return request.render("8848_portal.portal_franchise_order_history", values)
+        
+    @http.route(['/my/orders/<int:order_id>'], type='http', auth="user", website=True)
+    def order_details(self, order_id, **kw):
+        permitted_ids = request.env.user._get_permitted_franchise_ids('order')
+        order = request.env['sale.order'].sudo().browse(order_id)
+        if not order.exists() or order.partner_id.id not in permitted_ids:
+            return request.redirect('/my/orders')
+            
+        values = {
+            'order': order,
+            'page_name': 'franchise_order_details',
+        }
+        return request.render("8848_portal.portal_franchise_order_details", values)
+
+    @http.route(['/my/orders/<int:order_id>/reorder'], type='http', auth="user", website=True, methods=['POST'])
+    def reorder(self, order_id, **kw):
+        permitted_ids = request.env.user._get_permitted_franchise_ids('order')
+        old_order = request.env['sale.order'].sudo().browse(order_id)
+        if not old_order.exists() or old_order.partner_id.id not in permitted_ids:
+            return request.redirect('/my/orders')
+            
+        active_id = old_order.partner_id.id
+        request.session['active_franchise_id'] = active_id
+        
+        draft_order = request.env['sale.order'].sudo().search([
+            ('partner_id', '=', active_id),
+            ('state', 'in', ['draft', 'sent']),
+            ('approval_state', '=', 'draft')
+        ], limit=1)
+        
+        if not draft_order:
+            draft_order = request.env['sale.order'].sudo().create({
+                'partner_id': active_id,
+                'approval_state': 'draft'
+            })
+            
+        for line in old_order.order_line:
+            if not line.product_id.is_portal_orderable or not line.product_id.active:
+                continue
+            
+            existing = draft_order.order_line.filtered(lambda l: l.product_id.id == line.product_id.id)
+            if existing:
+                existing.product_uom_qty += line.product_uom_qty
+            else:
+                request.env['sale.order.line'].sudo().create({
+                    'order_id': draft_order.id,
+                    'product_id': line.product_id.id,
+                    'product_uom_qty': line.product_uom_qty,
+                })
+                
+        return request.redirect('/my/orders/new')
