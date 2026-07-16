@@ -3,7 +3,7 @@
 - **Current Commit (main):** Completed Milestone 6 (Factory & Supply Chain)
 - **Current Milestone:** [x] Milestone 1.5, [x] Milestone 2, [x] Milestone 3, [x] Milestone 4, [x] Milestone 5, [x] Milestone 6
 - **Current Branch:** main
-- **Last Completed Work:** Implemented Milestone 6 (Supply Chain & Factory). procurement, QA gates, delivery routing, and OTIF metrics.
+- **Last Completed Work:** Batch F2 of Milestone 6B (Franchise sale-order extension and approval).
 - **Validation Executed:**
   - Automated tests pass for all supply chain models (`8848_supplier`, `8848_factory`, `8848_warehouse`, `8848_delivery`).
   - Final functional regression verification successful.

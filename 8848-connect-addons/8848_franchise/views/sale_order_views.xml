@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_8848_approval" model="ir.ui.view">
+        <field name="name">sale.order.form.8848.approval</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_approve_order" type="object" string="Approve 8848 Order"
+                        class="btn-primary"
+                        invisible="approval_state != 'draft'"
+                        groups="8848_security.group_8848_operations_manager,sales_team.group_sale_manager"/>
+                <button name="action_reject_order" type="object" string="Reject 8848 Order"
+                        invisible="approval_state != 'draft'"
+                        groups="8848_security.group_8848_operations_manager,sales_team.group_sale_manager"/>
+            </xpath>
+
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="approval_state" widget="badge" 
+                       decoration-success="approval_state == 'approved'" 
+                       decoration-info="approval_state == 'draft'" 
+                       decoration-danger="approval_state == 'rejected'"/>
+                <field name="approved_by" invisible="approval_state != 'approved'"/>
+                <field name="approved_at" invisible="approval_state != 'approved'"/>
+                <field name="fulfilment_state" widget="badge"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
