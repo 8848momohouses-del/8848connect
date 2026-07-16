@@ -14,6 +14,7 @@
         'views/portal_templates.xml',
         'views/order_templates.xml',
         'views/delivery_templates.xml',
+        'views/finance_templates.xml',
     ],
     'installable': True,
     'application': False,
