@@ -80,7 +80,7 @@ class TestE2ELifecycle(common.TransactionCase):
         
         # Explicitly pack
         delivery.action_start_packing()
-        delivery.action_mark_packed()
+        delivery.action_finish_packing()
         
         # Record explicit picked quantities
         for move in delivery.move_ids:

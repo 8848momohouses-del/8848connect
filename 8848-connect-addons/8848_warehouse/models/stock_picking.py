@@ -24,7 +24,7 @@ class StockPicking(models.Model):
                 'packing_started_at': fields.Datetime.now()
             })
 
-    def action_mark_packed(self):
+    def action_finish_packing(self):
         for picking in self:
             if not (self.env.user.has_group('8848_security.group_8848_factory_user') or 
                     self.env.user.has_group('8848_security.group_8848_ops_user') or 

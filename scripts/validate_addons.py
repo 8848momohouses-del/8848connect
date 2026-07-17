@@ -69,6 +69,14 @@ def read_manifest(mod: pathlib.Path) -> dict | None:
     return data
 
 
+def check_manifest_files_exist(mod: pathlib.Path, manifest: dict) -> None:
+    for key in ("data", "demo"):
+        for rel in manifest.get(key, []):
+            if not (mod / rel).is_file():
+                errors.append(f"[files] {mod.name}: manifest lists missing "
+                              f"file {rel}")
+
+
 def check_xml(mod: pathlib.Path) -> None:
     for xml_file in mod.rglob("*.xml"):
         try:
@@ -194,6 +202,7 @@ def main() -> int:
         if manifest is None:
             continue
         manifests[mod.name] = manifest
+        check_manifest_files_exist(mod, manifest)
         check_python(mod)
         check_xml(mod)
         check_csv(mod)

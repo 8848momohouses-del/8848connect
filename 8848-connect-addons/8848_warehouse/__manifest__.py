@@ -12,7 +12,6 @@
     'depends': ['8848_inventory', 'stock', 'product_expiry', '8848_communication'],
     'data': [
         'views/stock_lot_views.xml',
-        'views/stock_move_line_views.xml',
         'views/stock_picking_views.xml',
     ],
     'installable': True,

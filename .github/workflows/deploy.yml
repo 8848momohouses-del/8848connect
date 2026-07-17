@@ -25,11 +25,11 @@ jobs:
       - name: Add Server to Known Hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.PROD_SERVER_IP }} >> ~/.ssh/known_hosts || true
+          ssh-keyscan -p 22022 -H ${{ secrets.PROD_SERVER_IP }} >> ~/.ssh/known_hosts || true
           
       - name: Execute Deployment
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+          ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
             set -e
             cd /opt/8848-connect
             git fetch origin

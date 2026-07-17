@@ -24,7 +24,7 @@ class SaleOrder(models.Model):
 
     def action_approve_order(self):
         self.ensure_one()
-        if not self.env.user.has_group('8848_security.group_8848_operations_manager') and not self.env.user.has_group('sales_team.group_sale_manager'):
+        if not self.env.user.has_group('8848_security.group_8848_ops_manager') and not self.env.user.has_group('sales_team.group_sale_manager'):
             raise exceptions.AccessError(_("You do not have permission to approve franchise orders."))
         
         if not self.partner_id:
@@ -67,7 +67,7 @@ class SaleOrder(models.Model):
 
     def action_reject_order(self):
         self.ensure_one()
-        if not self.env.user.has_group('8848_security.group_8848_operations_manager') and not self.env.user.has_group('sales_team.group_sale_manager'):
+        if not self.env.user.has_group('8848_security.group_8848_ops_manager') and not self.env.user.has_group('sales_team.group_sale_manager'):
             raise exceptions.AccessError(_("You do not have permission to reject franchise orders."))
         self.write({
             'approval_state': 'rejected'
