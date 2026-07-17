@@ -16,7 +16,8 @@ fi
 echo "Checking Odoo HTTP endpoint..."
 # We wait for up to 30 seconds for Odoo to become responsive
 for i in {1..30}; do
-    if curl -s -f http://127.0.0.1:8069/web/webclient/version_info > /dev/null 2>&1; then
+    HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://127.0.0.1:8069/web/login || echo "000")
+    if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 303 ]; then
         echo "[OK] Odoo HTTP endpoint is responsive."
         exit 0
     fi
