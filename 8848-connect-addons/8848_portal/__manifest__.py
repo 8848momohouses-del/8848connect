@@ -4,7 +4,7 @@
     'version': '1.0',
     'category': 'Website/Portal',
     'summary': 'Dedicated web portal for Franchisees to view deliveries and royalties.',
-    'depends': ['portal', 'website', '8848_franchise', '8848_royalty'],
+    'depends': ['portal', 'website', '8848_franchise', '8848_royalty', '8848_communication'],
     'data': [
         'security/security_rules.xml',
         'security/ir.model.access.csv',

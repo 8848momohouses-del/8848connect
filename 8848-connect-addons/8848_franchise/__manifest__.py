@@ -11,7 +11,7 @@
         the operational gate consumed by the portal and reporting modules.
     """,
     'author': '8848 Momo House',
-    'depends': ['base', 'contacts', '8848_security', '8848_workflow', 'sale_management'],
+    'depends': ['base', 'contacts', '8848_security', '8848_workflow', 'sale_management', '8848_communication'],
     'data': [
         'security/ir.model.access.csv',
         'data/franchise_stage_data.xml',
