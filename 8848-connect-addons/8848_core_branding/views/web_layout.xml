@@ -4,7 +4,7 @@
         <!-- Override the main web layout to remove Odoo title -->
         <template id="layout" inherit_id="web.layout" name="8848 Web Layout">
             <xpath expr="//title" position="replace">
-                <title>8848 Connect</title>
+                <title>8848 Momo house</title>
             </xpath>
         </template>
 
