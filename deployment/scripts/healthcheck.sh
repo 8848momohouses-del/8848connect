@@ -15,12 +15,12 @@ fi
 
 echo "Checking Odoo HTTP endpoint..."
 # We wait for up to 30 seconds for Odoo to become responsive
-for i in {1..15}; do
+for i in {1..30}; do
     if curl -s -f http://127.0.0.1:8069/web/webclient/version_info > /dev/null 2>&1; then
         echo "[OK] Odoo HTTP endpoint is responsive."
         exit 0
     fi
-    echo "Waiting for Odoo to start ($i/15)..."
+    echo "Waiting for Odoo to start ($i/30)..."
     sleep 2
 done
 
