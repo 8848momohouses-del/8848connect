@@ -2,6 +2,7 @@ from odoo import models, fields, api
 
 class SupportTicket(models.Model):
     _name = '8848.support.ticket'
+    _table = 'connect_support_ticket'
     _description = 'Support Ticket'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 

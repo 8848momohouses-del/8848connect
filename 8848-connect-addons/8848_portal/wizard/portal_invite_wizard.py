@@ -2,6 +2,7 @@ from odoo import models, fields, api, exceptions, _
 
 class PortalInviteWizard(models.TransientModel):
     _name = '8848.portal.invite.wizard'
+    _table = 'connect_portal_invite_wizard'
     _description = 'Portal Invite Wizard'
 
     franchise_id = fields.Many2one('res.partner', string='Franchise', required=True, readonly=True)

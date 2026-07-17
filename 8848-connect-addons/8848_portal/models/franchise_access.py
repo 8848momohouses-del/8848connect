@@ -2,6 +2,7 @@ from odoo import models, fields, api, exceptions, _
 
 class FranchiseAccess(models.Model):
     _name = '8848.franchise.access'
+    _table = 'connect_franchise_access'
     _description = 'Franchise Portal Access'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 

@@ -69,6 +69,23 @@ def read_manifest(mod: pathlib.Path) -> dict | None:
     return data
 
 
+def check_model_tables(mod: pathlib.Path) -> None:
+    """Models whose _name starts with a digit (all 8848.* models) must set
+    an explicit _table: PostgreSQL identifiers cannot start with a digit,
+    and Odoo raises 'Invalid characters in table name' at install."""
+    import re
+    for py in mod.rglob("*.py"):
+        if "__pycache__" in str(py):
+            continue
+        src = py.read_text(errors="ignore")
+        for m in re.finditer(r"_name\s*=\s*['\"](\d[\w.]*)['\"]", src):
+            block = src[m.start():m.start() + 400]
+            if "_table" not in block:
+                errors.append(f"[table] {py.relative_to(ROOT)}: model "
+                              f"'{m.group(1)}' needs an explicit _table "
+                              f"(digit-leading name)")
+
+
 def check_manifest_files_exist(mod: pathlib.Path, manifest: dict) -> None:
     for key in ("data", "demo"):
         for rel in manifest.get(key, []):
@@ -203,6 +220,7 @@ def main() -> int:
             continue
         manifests[mod.name] = manifest
         check_manifest_files_exist(mod, manifest)
+        check_model_tables(mod)
         check_python(mod)
         check_xml(mod)
         check_csv(mod)
