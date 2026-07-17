@@ -1,9 +1,7 @@
 name: install-test
 
 on:
-  push:
-    branches: [main, staging, 'feature/8848-api-gateway', 'feature/8848-supply-chain']
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   fresh-db-install:

@@ -17,7 +17,6 @@ class TestPacking(common.TransactionCase):
             'location_dest_id': dest_location.id,
         })
         self.move = self.env['stock.move'].create({
-            'name': 'Test Move',
             'product_id': self.product.id,
             'product_uom_qty': 10,
             'product_uom': self.product.uom_id.id,
