@@ -30,7 +30,7 @@
 
                 <!-- Add Franchise Notebook Page -->
                 <xpath expr="//notebook" position="inside">
-                    <page string="Franchise Information" invisible="not is_franchise">
+                    <page name="franchise_info" string="Franchise Information" invisible="not is_franchise">
                         <group>
                             <group string="Store Details">
                                 <field name="store_id"/>
