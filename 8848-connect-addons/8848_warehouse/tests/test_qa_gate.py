@@ -28,6 +28,10 @@ class TestQAGate(TransactionCase):
             'location_id': self.picking_type_out.default_location_src_id.id,
             'location_dest_id': self.partner.property_stock_customer.id,
         })
+        # This suite tests the LOT QA gate in isolation; satisfy the packing
+        # gate (also enforced on outgoing button_validate) so it cannot mask
+        # the QA outcome under test.
+        self.picking.packing_status = 'packed'
 
     def test_qa_validation_error(self):
         move = self.env['stock.move'].create({

@@ -4,7 +4,7 @@ class TestReports(common.TransactionCase):
     def setUp(self):
         super().setUp()
         self.partner = self.env['res.partner'].create({'name': 'Test Franchise'})
-        self.product = self.env['product.product'].create({'name': 'Test Product', 'type': 'product'})
+        self.product = self.env['product.product'].create({'name': 'Test Product', 'type': 'consu', 'is_storable': True})
         self.picking = self.env['stock.picking'].create({
             'partner_id': self.partner.id,
             'picking_type_id': self.env.ref('stock.picking_type_out').id,

@@ -40,6 +40,10 @@ class TestDeliveryRouting(TransactionCase):
         
         route.action_start_route()
         self.assertEqual(route.state, 'in_transit')
+
+        # Satisfy the outgoing packing gate: this test covers route
+        # completion, not the packing workflow.
+        self.picking.packing_status = 'packed' 
         
         # We need stock to validate, so we bypass strict validation for unit test or mock it.
         self.picking.action_assign()

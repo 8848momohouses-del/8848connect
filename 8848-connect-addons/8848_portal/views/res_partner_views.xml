@@ -4,7 +4,7 @@
         <record id="view_partner_form_portal_access" model="ir.ui.view">
             <field name="name">res.partner.form.portal.access</field>
             <field name="model">res.partner</field>
-            <field name="inherit_id" ref="8848_franchise.view_partner_form_8848_franchise"/>
+            <field name="inherit_id" ref="8848_franchise.view_partner_form_franchise"/>
             <field name="arch" type="xml">
                 <xpath expr="//header" position="inside">
                     <button name="action_invite_portal" type="object" string="Invite Portal User" class="btn-secondary" invisible="not is_franchise"/>

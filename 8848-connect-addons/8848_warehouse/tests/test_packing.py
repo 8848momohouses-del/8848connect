@@ -5,7 +5,7 @@ class TestPacking(common.TransactionCase):
     def setUp(self):
         super().setUp()
         self.partner = self.env['res.partner'].create({'name': 'Test Partner'})
-        self.product = self.env['product.product'].create({'name': 'Test Product', 'type': 'product'})
+        self.product = self.env['product.product'].create({'name': 'Test Product', 'type': 'consu', 'is_storable': True})
         picking_type = self.env['stock.picking.type'].search([('code', '=', 'outgoing')], limit=1)
         location = self.env['stock.location'].search([('usage', '=', 'internal')], limit=1)
         dest_location = self.env['stock.location'].search([('usage', '=', 'customer')], limit=1)

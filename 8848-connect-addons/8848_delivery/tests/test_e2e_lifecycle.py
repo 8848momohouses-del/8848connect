@@ -16,11 +16,11 @@ class TestE2ELifecycle(common.TransactionCase):
         })
         self.raw_material = self.env['product.product'].create({
             'name': 'Raw Material',
-            'type': 'product'
+            'type': 'consu', 'is_storable': True
         })
         self.finished_good = self.env['product.product'].create({
             'name': 'Finished Good',
-            'type': 'product'
+            'type': 'consu', 'is_storable': True
         })
         
     def test_end_to_end_supply_chain(self):
