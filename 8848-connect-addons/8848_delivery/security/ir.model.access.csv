@@ -1,6 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_delivery_route_read,delivery_route.read,model_8848_delivery_route,base.group_user,1,0,0,0
-access_delivery_route_driver,delivery_route.driver,model_8848_delivery_route,8848_driver.group_8848_driver,1,1,0,0
 access_delivery_route_ops_user,delivery_route.ops_user,model_8848_delivery_route,8848_security.group_8848_ops_user,1,1,1,0
 access_delivery_route_ops_manager,delivery_route.ops_manager,model_8848_delivery_route,8848_security.group_8848_ops_manager,1,1,1,1
 access_delivery_route_factory_user,delivery_route.factory_user,model_8848_delivery_route,8848_security.group_8848_factory_user,1,0,0,0

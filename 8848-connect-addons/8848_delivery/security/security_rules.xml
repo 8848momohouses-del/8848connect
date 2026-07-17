@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Driver can only see routes assigned to them -->
-        <record id="rule_delivery_route_driver" model="ir.rule">
-            <field name="name">Delivery Route: Driver sees only own</field>
-            <field name="model_id" ref="model_8848_delivery_route"/>
-            <field name="domain_force">[('driver_id', '=', user.id)]</field>
-            <field name="groups" eval="[(4, ref('8848_driver.group_8848_driver'))]"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
+        <!-- NOTE: the driver-scoped rule lives in 8848_driver (which owns the
+             driver group and correctly matches driver_id.user_id); keeping it
+             here both inverted the dependency (delivery -> driver cycle) and
+             compared an hr.employee id against a res.users id. -->
 
         <!-- Operations/Managers can see all routes -->
         <record id="rule_delivery_route_all" model="ir.rule">

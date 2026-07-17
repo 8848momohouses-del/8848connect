@@ -139,9 +139,38 @@ def check_dependencies(mod: pathlib.Path, manifest: dict,
 
 # Foundation-layer 8848 dependencies the franchise core is allowed to have.
 # Milestone 1 added 8848_security (groups); Milestone 5 applied the
-# 8848_workflow mixin directly on res.partner, placing the engine beneath
-# the core. Anything else remains a layering violation.
-FOUNDATION_ALLOWED_DEPS = {"8848_security", "8848_workflow"}
+# 8848_workflow mixin directly on res.partner; Milestone 7 wired welcome/
+# portal-order messages through 8848_communication channels. Anything else
+# remains a layering violation.
+FOUNDATION_ALLOWED_DEPS = {"8848_security", "8848_workflow", "8848_communication"}
+
+
+def check_dependency_cycles(manifests: dict[str, dict]) -> None:
+    """Detect dependency cycles among local modules (Odoo aborts installs
+    with 'Recursion error in modules dependencies!' at runtime; catch it
+    statically here)."""
+    graph = {name: [d for d in mf.get("depends", []) if d in manifests]
+             for name, mf in manifests.items()}
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = dict.fromkeys(graph, WHITE)
+    path: list[str] = []
+
+    def dfs(node: str) -> list[str] | None:
+        color[node] = GRAY
+        path.append(node)
+        for dep in graph[node]:
+            if color[dep] == GRAY:
+                return path[path.index(dep):] + [dep]
+            if color[dep] == WHITE and (cycle := dfs(dep)):
+                return cycle
+        color[node] = BLACK
+        path.pop()
+        return None
+
+    for node in graph:
+        if color[node] == WHITE and (cycle := dfs(node)):
+            errors.append(f"[cycle] dependency cycle: {' -> '.join(cycle)}")
+            return
 
 
 def check_foundation_purity(manifests: dict[str, dict]) -> None:
@@ -171,6 +200,7 @@ def main() -> int:
         check_duplicate_xmlids(mod, manifest)
         check_dependencies(mod, manifest, local_names)
 
+    check_dependency_cycles(manifests)
     check_foundation_purity(manifests)
 
     for w in warnings:

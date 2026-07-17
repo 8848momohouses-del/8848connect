@@ -4,7 +4,7 @@
     'category': 'Operations/Delivery',
     'summary': 'Phase 4: 8848_delivery',
     'author': '8848 Momo House',
-    'depends': ['stock', 'hr', 'fleet', '8848_security', '8848_communication', '8848_driver'],
+    'depends': ['stock', 'hr', 'fleet', '8848_security', '8848_communication'],
     'data': [
         'security/ir.model.access.csv',
         'security/security_rules.xml',

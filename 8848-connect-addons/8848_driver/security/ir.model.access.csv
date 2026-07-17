@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_hr_employee_driver,hr_employee.driver,hr.model_hr_employee,group_8848_driver,1,0,0,0
+access_delivery_route_driver,delivery_route.driver,8848_delivery.model_8848_delivery_route,group_8848_driver,1,1,0,0
