@@ -1,6 +1,8 @@
 from odoo import http
 from odoo.http import request
 
+class FranchisePortal(http.Controller):
+
     @http.route(['/my/franchise/select'], type='http', auth="user", website=True, methods=['POST'])
     def select_franchise(self, franchise_id, redirect='/my/franchise', **kw):
         franchise_id = int(franchise_id)
