@@ -8,7 +8,12 @@ class TestE2ELifecycle(common.TransactionCase):
         self.franchise = self.env['res.partner'].create({
             'name': 'Test Franchise',
             'is_franchise': True,
-            'customer_rank': 1
+            'customer_rank': 1,
+            # operational gate: order approval requires an operational franchise
+            'franchise_approved': True,
+            'agreement_signed_date': '2026-01-01',
+            'deposit_received_date': '2026-01-01',
+            'grand_opening_date': '2026-01-01',
         })
         self.driver = self.env['res.users'].create({
             'name': 'Test Driver',
@@ -53,9 +58,10 @@ class TestE2ELifecycle(common.TransactionCase):
             })]
         })
         mo.action_confirm()
+        mo.qty_producing = 10
         for move in mo.move_raw_ids:
             move.quantity = 50
-        mo.qty_producing = 10
+            move.picked = True
         mo.button_mark_done()
         
         self.assertEqual(self.raw_material.qty_available, 50)

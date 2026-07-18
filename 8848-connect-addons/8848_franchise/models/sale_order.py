@@ -30,10 +30,10 @@ class SaleOrder(models.Model):
         if not self.partner_id:
             raise exceptions.UserError(_("No customer selected on the order."))
 
-        if self.partner_id.is_franchise:
-            # We must use safe access or ensure franchise_stage_id exists
-            if self.partner_id.franchise_stage_id and self.partner_id.franchise_stage_id.code != 'operational':
-                raise exceptions.UserError(_("This franchise is not in the 'Operational' stage. Approval blocked."))
+        if self.partner_id.is_franchise and not self.partner_id.is_operational:
+            # is_operational is THE canonical gate (approved + agreement +
+            # deposit + grand opening); the stage model has no 'code' field.
+            raise exceptions.UserError(_("This franchise is not operational yet. Approval blocked."))
 
         # Check for insufficient stock and warn, but don't strictly block approval.
         # This explicitly shows insufficient stock state.
