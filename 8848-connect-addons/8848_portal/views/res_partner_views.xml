@@ -12,7 +12,7 @@
                 <xpath expr="//page[@name='franchise_info']" position="after">
                     <page name="portal_access" string="Portal Access" invisible="not is_franchise">
                         <field name="portal_access_ids">
-                            <tree editable="bottom">
+                            <list editable="bottom">
                                 <field name="user_id"/>
                                 <field name="portal_role"/>
                                 <field name="state"/>
@@ -21,7 +21,7 @@
                                 <button name="action_activate" type="object" string="Activate" invisible="state == 'active'"/>
                                 <button name="action_suspend" type="object" string="Suspend" invisible="state != 'active'"/>
                                 <button name="action_revoke" type="object" string="Revoke" invisible="state == 'revoked'"/>
-                            </tree>
+                            </list>
                         </field>
                     </page>
                 </xpath>
