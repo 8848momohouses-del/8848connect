@@ -1,0 +1,111 @@
+name: Server Operations
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "Operation to run on the production server"
+        required: true
+        type: choice
+        options:
+          - inspect
+          - restore-content
+          - harden
+      release_tag:
+        description: "Release tag holding backup assets (restore-content only)"
+        required: false
+        default: ""
+
+jobs:
+  server-op:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+
+      - name: Inspect server (read-only)
+        if: inputs.operation == 'inspect'
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+            set -e
+            echo "== docker containers =="; docker ps --format '{{.Names}} {{.Image}} {{.Status}}'
+            echo "== databases =="; docker exec 8848_db psql -U $(docker exec 8848_db printenv POSTGRES_USER) -lqt | cut -d'|' -f1 | grep -v template
+            echo "== filestore dirs =="; docker exec 8848_odoo ls /var/lib/odoo/filestore/ 2>/dev/null || true
+            echo "== odoo.conf (redacted) =="; docker exec 8848_odoo grep -vE "passwd|password" /etc/odoo/odoo.conf
+            echo "== nginx sites =="; ls /etc/nginx/sites-enabled/ 2>/dev/null; nginx -T 2>/dev/null | grep -E "server_name|/web/database" | head -20
+            echo "== disk =="; df -h / | tail -1
+          EOF
+
+      - name: Download backup assets from release
+        if: inputs.operation == 'restore-content'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          test -n "${{ inputs.release_tag }}" || { echo "::error::release_tag required"; exit 1; }
+          gh release download "${{ inputs.release_tag }}" --repo "$GITHUB_REPOSITORY" -D /tmp/transfer
+          ls -lh /tmp/transfer
+
+      - name: Transfer and restore content (with server-side safety backup)
+        if: inputs.operation == 'restore-content'
+        run: |
+          scp -o StrictHostKeyChecking=no /tmp/transfer/db.dump /tmp/transfer/filestore.tar.gz \
+            ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }}:/tmp/
+          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+            set -e
+            cd /opt/8848-connect/deployment
+            DBUSER=$(docker exec 8848_db printenv POSTGRES_USER)
+            STAMP=$(date +%Y%m%d-%H%M%S)
+
+            echo "== 1/6 server-side safety backup of current live DB =="
+            mkdir -p /opt/8848-connect/server-backups/$STAMP
+            docker exec 8848_db pg_dump -U "$DBUSER" -Fc 8848_live_final > /opt/8848-connect/server-backups/$STAMP/pre-restore-db.dump || echo "(live DB absent, nothing to back up)"
+            docker exec 8848_odoo tar -czf - -C /var/lib/odoo/filestore 8848_live_final 2>/dev/null > /opt/8848-connect/server-backups/$STAMP/pre-restore-filestore.tar.gz || true
+
+            echo "== 2/6 stop odoo =="
+            docker compose stop odoo
+
+            echo "== 3/6 replace database =="
+            docker exec 8848_db psql -U "$DBUSER" -d postgres -c "DROP DATABASE IF EXISTS \"8848_live_final\";"
+            docker exec 8848_db psql -U "$DBUSER" -d postgres -c "CREATE DATABASE \"8848_live_final\";"
+            docker exec -i 8848_db pg_restore -U "$DBUSER" --no-owner -d 8848_live_final < /tmp/db.dump
+
+            echo "== 4/6 replace filestore (renamed to live DB name) =="
+            docker run --rm -v deployment_odoo-filestore:/fs -v /tmp:/t alpine sh -c \
+              "rm -rf /fs/filestore/8848_live_final && mkdir -p /fs/filestore && tar -xzf /t/filestore.tar.gz -C /tmp_x 2>/dev/null || (mkdir -p /tmp_x && tar -xzf /t/filestore.tar.gz -C /tmp_x) && mv /tmp_x/* /fs/filestore/8848_live_final"
+
+            echo "== 5/6 align schema with deployed code =="
+            docker compose run --rm odoo odoo -c /etc/odoo/odoo.conf -d 8848_live_final -u 8848_franchise,8848_communication,8848_portal,8848_warehouse,8848_supplier,8848_factory,8848_quality --stop-after-init --logfile=/dev/stdout | tail -20
+
+            echo "== 6/6 start and verify =="
+            docker compose up -d
+            sleep 15
+            curl -s -o /dev/null -w "login: %{http_code}\n" http://127.0.0.1:8069/web/login
+            rm -f /tmp/db.dump /tmp/filestore.tar.gz
+            echo "RESTORE COMPLETE (safety backup: server-backups/$STAMP)"
+          EOF
+
+      - name: Harden database manager exposure
+        if: inputs.operation == 'harden'
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+            set -e
+            cd /opt/8848-connect/deployment
+            echo "== ensure list_db disabled and dbfilter set in odoo conf =="
+            docker exec 8848_odoo sh -c 'grep -q "^list_db" /etc/odoo/odoo.conf && sed -i "s/^list_db.*/list_db = False/" /etc/odoo/odoo.conf || echo "list_db = False" >> /etc/odoo/odoo.conf'
+            docker exec 8848_odoo sh -c 'grep -q "^dbfilter" /etc/odoo/odoo.conf || echo "dbfilter = ^8848_live_final$" >> /etc/odoo/odoo.conf'
+            echo "== block /web/database/* at nginx on every vhost =="
+            for f in /etc/nginx/sites-enabled/*; do
+              grep -q "web/database" "$f" || sudo sed -i '0,/location \/ {/s//location ~ ^\/web\/database\/ { deny all; }\n    location \/ {/' "$f"
+            done
+            sudo nginx -t && sudo systemctl reload nginx
+            docker compose restart odoo
+            sleep 12
+            echo "== verify =="
+            curl -s -o /dev/null -w "db selector: %{http_code} (expect 403)\n" http://127.0.0.1:8069/web/database/selector || true
+            curl -s -o /dev/null -w "login: %{http_code}\n" http://127.0.0.1:8069/web/login
+          EOF
