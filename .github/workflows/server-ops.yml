@@ -9,6 +9,7 @@ on:
         type: choice
         options:
           - inspect
+          - diagnose
           - restore-content
           - harden
       release_tag:
@@ -39,6 +40,17 @@ jobs:
             echo "== odoo.conf (redacted) =="; docker exec 8848_odoo grep -vE "passwd|password" /etc/odoo/odoo.conf
             echo "== nginx sites =="; ls /etc/nginx/sites-enabled/ 2>/dev/null; nginx -T 2>/dev/null | grep -E "server_name|/web/database" | head -20
             echo "== disk =="; df -h / | tail -1
+          EOF
+
+      - name: Diagnose Odoo boot failure
+        if: inputs.operation == 'diagnose'
+        run: |
+          ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+            set -e
+            cd /opt/8848-connect/deployment
+            echo "== containers =="; docker ps -a --format '{{.Names}} {{.Status}}'
+            echo "== odoo last 60 log lines =="; docker compose logs --tail 60 odoo 2>&1 | tail -60
+            echo "== filestore =="; docker run --rm -v deployment_odoo-filestore:/fs alpine ls -la /fs/filestore/ 2>/dev/null || true
           EOF
 
       - name: Download backup assets from release
