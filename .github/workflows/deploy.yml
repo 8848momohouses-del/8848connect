@@ -8,6 +8,12 @@ on:
       - 'v*'
   workflow_dispatch:
 
+# Serialize deploys: concurrent runs (e.g. after an Actions outage flushes
+# a queued backlog) collide on the server's git refs and corrupt them.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -32,7 +38,9 @@ jobs:
           ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
             set -e
             cd /opt/8848-connect
-            git fetch origin
+            # self-heal refs corrupted by interrupted/concurrent fetches
+            git update-ref -d refs/remotes/origin/main 2>/dev/null || true
+            git fetch --prune origin
             git reset --hard origin/main
             cd deployment
             chmod +x scripts/*.sh

@@ -31,7 +31,7 @@ jobs:
       - name: Inspect server (read-only)
         if: inputs.operation == 'inspect'
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+          ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
             set -e
             echo "== docker containers =="; docker ps --format '{{.Names}} {{.Image}} {{.Status}}'
             echo "== databases =="; docker exec 8848_db psql -U $(docker exec 8848_db printenv POSTGRES_USER) -lqt | cut -d'|' -f1 | grep -v template
@@ -53,9 +53,9 @@ jobs:
       - name: Transfer and restore content (with server-side safety backup)
         if: inputs.operation == 'restore-content'
         run: |
-          scp -o StrictHostKeyChecking=no /tmp/transfer/db.dump /tmp/transfer/filestore.tar.gz \
+          scp -P 22022 -o StrictHostKeyChecking=no /tmp/transfer/db.dump /tmp/transfer/filestore.tar.gz \
             ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }}:/tmp/
-          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+          ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
             set -e
             cd /opt/8848-connect/deployment
             DBUSER=$(docker exec 8848_db printenv POSTGRES_USER)
@@ -92,7 +92,7 @@ jobs:
       - name: Harden database manager exposure
         if: inputs.operation == 'harden'
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+          ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
             set -e
             cd /opt/8848-connect/deployment
             echo "== ensure list_db disabled and dbfilter set in odoo conf =="
