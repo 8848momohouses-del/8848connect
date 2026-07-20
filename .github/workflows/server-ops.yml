@@ -10,6 +10,7 @@ on:
         options:
           - inspect
           - diagnose
+          - repair-config
           - restore-content
           - harden
       release_tag:
@@ -51,6 +52,36 @@ jobs:
             echo "== containers =="; docker ps -a --format '{{.Names}} {{.Status}}'
             echo "== odoo last 60 log lines =="; docker compose logs --tail 60 odoo 2>&1 | tail -60
             echo "== filestore =="; docker run --rm -v deployment_odoo-filestore:/fs alpine ls -la /fs/filestore/ 2>/dev/null || true
+          EOF
+
+      - name: Repair odoo.conf (de-duplicate keys) and reboot
+        if: inputs.operation == 'repair-config'
+        run: |
+          ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+            set -e
+            cd /opt/8848-connect/deployment
+            echo "== before =="; docker exec 8848_odoo cat /etc/odoo/odoo.conf | grep -nE "dbfilter|list_db" || true
+            # keep the LAST occurrence of each key in [options]; drop earlier dupes
+            docker exec 8848_odoo python3 - <<'PY'
+import re
+path='/etc/odoo/odoo.conf'
+lines=open(path).read().splitlines()
+seen=set(); out=[]
+for ln in reversed(lines):
+    m=re.match(r'\s*([A-Za-z_]+)\s*=', ln)
+    if m:
+        k=m.group(1)
+        if k in seen:
+            continue
+        seen.add(k)
+    out.append(ln)
+open(path,'w').write("\n".join(reversed(out))+"\n")
+print("deduped")
+PY
+            echo "== after =="; docker exec 8848_odoo cat /etc/odoo/odoo.conf | grep -nE "dbfilter|list_db" || true
+            docker compose restart odoo
+            sleep 15
+            curl -s -o /dev/null -w "login: %{http_code}\n" http://127.0.0.1:8069/web/login
           EOF
 
       - name: Download backup assets from release
