@@ -58,6 +58,7 @@ jobs:
             echo "== .bak files left by edits =="; ls -la /etc/nginx/sites-enabled/*.bak* /etc/nginx/sites-available/*.bak* 2>/dev/null || echo "(none)"
             echo "== FULL odoo_http.conf =="; sudo cat /etc/nginx/sites-enabled/odoo_http.conf
             echo "== letsencrypt certs =="; sudo ls -la /etc/letsencrypt/live/ 2>/dev/null || echo "(no letsencrypt)"
+            echo "== certbot certificates (domains + paths) =="; sudo certbot certificates 2>/dev/null | grep -E "Certificate Name|Domains|Certificate Path|Private Key Path|Expiry" || echo "(certbot not available)"
           EOF
 
       - name: Repair odoo.conf (de-duplicate keys) and reboot
