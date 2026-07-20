@@ -60,12 +60,18 @@ jobs:
           ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
             set -e
             cd /opt/8848-connect/deployment
-            echo "== before =="; docker exec 8848_odoo cat /etc/odoo/odoo.conf | grep -nE "dbfilter|list_db" || true
+            # The container crash-loops on the duplicate key, so edit the
+            # HOST-side bind-mounted conf directly (mounted read-only into odoo).
+            CONF=$(docker inspect 8848_odoo --format '{{range .Mounts}}{{if eq .Destination "/etc/odoo/odoo.conf"}}{{.Source}}{{end}}{{end}}')
+            echo "conf on host: $CONF"
+            echo "== before =="; sudo grep -nE "dbfilter|list_db" "$CONF" || true
             # keep only the FIRST occurrence of each key=; drop later duplicates
-            docker exec 8848_odoo sh -c 'awk -F= "/^[[:space:]]*[A-Za-z_]+[[:space:]]*=/ {k=\$1; gsub(/ /,\"\",k); if (seen[k]++) next} {print}" /etc/odoo/odoo.conf > /tmp/oc && cat /tmp/oc > /etc/odoo/odoo.conf'
-            echo "== after =="; docker exec 8848_odoo cat /etc/odoo/odoo.conf | grep -nE "dbfilter|list_db" || true
-            docker compose restart odoo
-            sleep 15
+            sudo cp "$CONF" "$CONF.bak.$(date +%s)"
+            sudo awk -F= '/^[[:space:]]*[A-Za-z_]+[[:space:]]*=/ {k=$1; gsub(/ /,"",k); if (seen[k]++) next} {print}' "$CONF" | sudo tee "$CONF.tmp" >/dev/null
+            sudo mv "$CONF.tmp" "$CONF"
+            echo "== after =="; sudo grep -nE "dbfilter|list_db" "$CONF" || true
+            docker compose up -d
+            sleep 18
             curl -s -o /dev/null -w "login: %{http_code}\n" http://127.0.0.1:8069/web/login
           EOF
 
