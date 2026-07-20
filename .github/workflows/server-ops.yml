@@ -11,6 +11,7 @@ on:
           - inspect
           - diagnose
           - repair-config
+          - recover-nginx
           - restore-content
           - harden
       release_tag:
@@ -73,6 +74,23 @@ jobs:
             docker compose up -d
             sleep 18
             curl -s -o /dev/null -w "login: %{http_code}\n" http://127.0.0.1:8069/web/login
+          EOF
+
+      - name: Recover nginx (revert DB-manager insert, restart)
+        if: inputs.operation == 'recover-nginx'
+        run: |
+          ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+            set +e
+            echo "== nginx service status =="; sudo systemctl status nginx --no-pager 2>&1 | head -5
+            echo "== remove the inserted DB-manager guard lines =="
+            for f in /etc/nginx/sites-enabled/*; do
+              sudo sed -i '/location ~ \^\/web\/database\/ { return 404; }/d' "$f"
+              sudo sed -i '/location ~ \^\/web\/database\/ { deny all; }/d' "$f"
+            done
+            echo "== nginx config test =="; sudo nginx -t 2>&1
+            echo "== restart nginx =="; sudo systemctl restart nginx 2>&1; sleep 3
+            echo "== verify =="
+            curl -sk -o /dev/null -w "erp login: %{http_code}\n" https://erp.8848mh.com/web/login
           EOF
 
       - name: Download backup assets from release
