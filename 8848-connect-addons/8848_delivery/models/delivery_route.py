@@ -1,4 +1,4 @@
-from odoo import models, fields, api, _
+from odoo import models, fields, api, exceptions, _
 
 class DeliveryRoute(models.Model):
     _name = '8848.delivery.route'

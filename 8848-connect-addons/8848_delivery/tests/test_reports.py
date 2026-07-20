@@ -11,7 +11,6 @@ class TestReports(common.TransactionCase):
             'location_id': self.env.ref('stock.stock_location_stock').id,
             'location_dest_id': self.env.ref('stock.stock_location_customers').id,
             'move_ids': [(0, 0, {
-                'name': 'Test Move',
                 'product_id': self.product.id,
                 'product_uom': self.product.uom_id.id,
                 'product_uom_qty': 1.0,
@@ -21,11 +20,11 @@ class TestReports(common.TransactionCase):
         })
 
     def test_render_packing_slip(self):
-        report = self.env.ref('8848_delivery.action_report_packing_slip')
-        pdf, _ = report._render_qweb_pdf(self.picking.ids)
+        pdf, _ = self.env['ir.actions.report']._render_qweb_pdf(
+            '8848_delivery.action_report_8848_packing_slip', res_ids=self.picking.ids)
         self.assertTrue(pdf, "PDF rendering failed for packing slip")
 
     def test_render_delivery_slip(self):
-        report = self.env.ref('8848_delivery.action_report_delivery_slip')
-        pdf, _ = report._render_qweb_pdf(self.picking.ids)
+        pdf, _ = self.env['ir.actions.report']._render_qweb_pdf(
+            '8848_delivery.action_report_8848_delivery_slip', res_ids=self.picking.ids)
         self.assertTrue(pdf, "PDF rendering failed for delivery slip")

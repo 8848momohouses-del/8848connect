@@ -15,6 +15,7 @@
     'depends': ['base', 'mail', 'sms', '8848_security'],
     'data': [
         'security/ir.model.access.csv',
+        'data/communication_channel_data.xml',
         'data/communication_cron.xml',
         'views/communication_menus.xml',
         'views/communication_channel_views.xml',
