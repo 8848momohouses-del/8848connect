@@ -1,6 +1,6 @@
 {
     'name': '8848 Connect - Communication Hub',
-    'version': '1.0',
+    'version': '1.1',
     'category': 'Productivity',
     'summary': 'Unified communication queue and template engine for the 8848 Business Suite.',
     'description': """
