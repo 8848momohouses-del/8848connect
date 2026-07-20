@@ -129,17 +129,24 @@ jobs:
           ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
             set -e
             cd /opt/8848-connect/deployment
-            echo "== ensure list_db disabled and dbfilter set in odoo conf =="
-            docker exec 8848_odoo sh -c 'grep -q "^list_db" /etc/odoo/odoo.conf && sed -i "s/^list_db.*/list_db = False/" /etc/odoo/odoo.conf || echo "list_db = False" >> /etc/odoo/odoo.conf'
-            docker exec 8848_odoo sh -c 'grep -q "^dbfilter" /etc/odoo/odoo.conf || echo "dbfilter = ^8848_live_final$" >> /etc/odoo/odoo.conf'
+            # odoo.conf is bind-mounted read-only and already carries
+            # list_db=False + dbfilter (verified via repair-config); the
+            # database manager is locked at the reverse proxy here.
+            echo "== current conf policy (host file) =="
+            CONF=$(docker inspect 8848_odoo --format '{{range .Mounts}}{{if eq .Destination "/etc/odoo/odoo.conf"}}{{.Source}}{{end}}{{end}}')
+            sudo grep -nE "list_db|dbfilter" "$CONF" || true
             echo "== block /web/database/* at nginx on every vhost =="
             for f in /etc/nginx/sites-enabled/*; do
-              grep -q "web/database" "$f" || sudo sed -i '0,/location \/ {/s//location ~ ^\/web\/database\/ { deny all; }\n    location \/ {/' "$f"
+              if ! grep -q "web/database" "$f"; then
+                sudo sed -i '0,/location \/ {/s//location ~ ^\/web\/database\/ { return 404; }\n    location \/ {/' "$f"
+                echo "  patched $f"
+              else
+                echo "  already blocked: $f"
+              fi
             done
             sudo nginx -t && sudo systemctl reload nginx
-            docker compose restart odoo
-            sleep 12
-            echo "== verify =="
-            curl -s -o /dev/null -w "db selector: %{http_code} (expect 403)\n" http://127.0.0.1:8069/web/database/selector || true
-            curl -s -o /dev/null -w "login: %{http_code}\n" http://127.0.0.1:8069/web/login
+            sleep 3
+            echo "== verify (via nginx :443, the real entrypoint) =="
+            curl -sk -o /dev/null -w "db selector: %{http_code} (expect 404)\n" https://erp.8848mh.com/web/database/selector || true
+            curl -sk -o /dev/null -w "login: %{http_code}\n" https://erp.8848mh.com/web/login
           EOF
