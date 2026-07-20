@@ -61,23 +61,8 @@ jobs:
             set -e
             cd /opt/8848-connect/deployment
             echo "== before =="; docker exec 8848_odoo cat /etc/odoo/odoo.conf | grep -nE "dbfilter|list_db" || true
-            # keep the LAST occurrence of each key in [options]; drop earlier dupes
-            docker exec 8848_odoo python3 - <<'PY'
-import re
-path='/etc/odoo/odoo.conf'
-lines=open(path).read().splitlines()
-seen=set(); out=[]
-for ln in reversed(lines):
-    m=re.match(r'\s*([A-Za-z_]+)\s*=', ln)
-    if m:
-        k=m.group(1)
-        if k in seen:
-            continue
-        seen.add(k)
-    out.append(ln)
-open(path,'w').write("\n".join(reversed(out))+"\n")
-print("deduped")
-PY
+            # keep only the FIRST occurrence of each key=; drop later duplicates
+            docker exec 8848_odoo sh -c 'awk -F= "/^[[:space:]]*[A-Za-z_]+[[:space:]]*=/ {k=\$1; gsub(/ /,\"\",k); if (seen[k]++) next} {print}" /etc/odoo/odoo.conf > /tmp/oc && cat /tmp/oc > /etc/odoo/odoo.conf'
             echo "== after =="; docker exec 8848_odoo cat /etc/odoo/odoo.conf | grep -nE "dbfilter|list_db" || true
             docker compose restart odoo
             sleep 15
