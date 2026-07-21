@@ -43,6 +43,8 @@ jobs:
             echo "== odoo.conf (redacted) =="; docker exec 8848_odoo grep -vE "passwd|password" /etc/odoo/odoo.conf
             echo "== nginx sites =="; ls /etc/nginx/sites-enabled/ 2>/dev/null; nginx -T 2>/dev/null | grep -E "server_name|/web/database" | head -20
             echo "== disk =="; df -h / | tail -1
+            echo "== modules NOT in installed/uninstalled (stuck states) =="; docker exec 8848_db psql -U $(docker exec 8848_db printenv POSTGRES_USER) -d 8848_live_final -tAc "SELECT name||' -> '||state FROM ir_module_module WHERE state NOT IN ('installed','uninstalled');" || echo "(none / query failed)"
+            echo "== any franchise_management traces? =="; docker exec 8848_db psql -U $(docker exec 8848_db printenv POSTGRES_USER) -d 8848_live_final -tAc "SELECT 'module: '||name||' ('||state||')' FROM ir_module_module WHERE name='franchise_management' UNION ALL SELECT 'orphan data rows: '||count(*)::text FROM ir_model_data WHERE module='franchise_management';" || echo "(none)"
           EOF
 
       - name: Diagnose Odoo boot failure
