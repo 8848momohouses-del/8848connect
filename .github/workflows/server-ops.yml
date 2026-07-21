@@ -12,6 +12,7 @@ on:
           - diagnose
           - repair-config
           - recover-nginx
+          - enable-https
           - restore-content
           - harden
       release_tag:
@@ -100,6 +101,39 @@ jobs:
             echo "== sockets after restart =="; sudo ss -tlnp | grep -E ':80|:443' || echo "(nothing on 80/443)"
             echo "== verify local :443 =="
             curl -sk -o /dev/null -w "erp login (local): %{http_code}\n" --resolve erp.8848mh.com:443:127.0.0.1 https://erp.8848mh.com/web/login
+          EOF
+
+      - name: Enable HTTPS (install combined nginx conf, auto-revert on failure)
+        if: inputs.operation == 'enable-https'
+        run: |
+          ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
+            set -e
+            cd /opt/8848-connect
+            git fetch --prune origin && git reset --hard origin/main
+            SA=/etc/nginx/sites-available; SE=/etc/nginx/sites-enabled
+            echo "== backup current enabled site =="
+            sudo cp -a "$SE/odoo_http.conf" "/tmp/odoo_http.conf.bak.$(date +%s)" 2>/dev/null || true
+            echo "== install combined conf =="
+            sudo cp deployment/nginx/odoo_combined.conf "$SA/odoo_combined.conf"
+            sudo ln -sf "$SA/odoo_combined.conf" "$SE/odoo_combined.conf"
+            sudo rm -f "$SE/odoo_http.conf"
+            echo "== test =="
+            if sudo nginx -t 2>&1; then
+              sudo systemctl reload nginx
+              echo "reloaded with HTTPS config"
+            else
+              echo "!! nginx -t FAILED — reverting to HTTP-only !!"
+              sudo rm -f "$SE/odoo_combined.conf"
+              sudo ln -sf "$SA/odoo_http.conf" "$SE/odoo_http.conf" 2>/dev/null || sudo cp deployment/nginx/odoo_http.conf "$SE/odoo_http.conf" 2>/dev/null || true
+              sudo nginx -t && sudo systemctl reload nginx
+              exit 1
+            fi
+            sleep 3
+            echo "== verify (localhost, real hostname) =="
+            curl -sk -o /dev/null -w "https erp:    %{http_code}\n" --resolve erp.8848mh.com:443:127.0.0.1    https://erp.8848mh.com/web/login
+            curl -sk -o /dev/null -w "https portal: %{http_code}\n" --resolve portal.8848mh.com:443:127.0.0.1 https://portal.8848mh.com/web/login
+            curl -sk -o /dev/null -w "db manager:   %{http_code} (expect 404)\n" --resolve erp.8848mh.com:443:127.0.0.1 https://erp.8848mh.com/web/database/selector
+            curl -s  -o /dev/null -w "http redirect: %{http_code} (expect 301)\n" http://127.0.0.1/web/login
           EOF
 
       - name: Download backup assets from release
