@@ -13,10 +13,15 @@ on:
           - repair-config
           - recover-nginx
           - enable-https
+          - install-module
           - restore-content
           - harden
       release_tag:
         description: "Release tag holding backup assets (restore-content only)"
+        required: false
+        default: ""
+      module_name:
+        description: "Module to install (install-module only)"
         required: false
         default: ""
 
@@ -135,6 +140,30 @@ jobs:
             curl -sk -o /dev/null -w "https portal: %{http_code}\n" --resolve portal.8848mh.com:443:127.0.0.1 https://portal.8848mh.com/web/login
             curl -sk -o /dev/null -w "db manager:   %{http_code} (expect 404)\n" --resolve erp.8848mh.com:443:127.0.0.1 https://erp.8848mh.com/web/database/selector
             curl -s  -o /dev/null -w "http redirect: %{http_code} (expect 301)\n" http://127.0.0.1/web/login
+          EOF
+
+      - name: Install a module the correct way (addons path + -i)
+        if: inputs.operation == 'install-module'
+        run: |
+          test -n "${{ inputs.module_name }}" || { echo "::error::module_name required"; exit 1; }
+          ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << EOF
+            set -e
+            cd /opt/8848-connect
+            git fetch --prune origin && git reset --hard origin/main
+            cd deployment
+            echo "== safety backup before install =="
+            STAMP=\$(date +%Y%m%d-%H%M%S)
+            DBUSER=\$(docker exec 8848_db printenv POSTGRES_USER)
+            mkdir -p /opt/8848-connect/server-backups/\$STAMP
+            docker exec 8848_db pg_dump -U "\$DBUSER" -Fc 8848_live_final > /opt/8848-connect/server-backups/\$STAMP/pre-install-db.dump
+            echo "== install ${{ inputs.module_name }} via -i (correct load order) =="
+            docker compose run --rm odoo odoo -c /etc/odoo/odoo.conf -d 8848_live_final -i ${{ inputs.module_name }} --stop-after-init --logfile=/dev/stdout | tail -25
+            echo "== restart + verify =="
+            docker compose up -d
+            sleep 15
+            docker exec 8848_db psql -U "\$DBUSER" -d 8848_live_final -tAc "SELECT name||' -> '||state FROM ir_module_module WHERE name='${{ inputs.module_name }}';"
+            curl -sk -o /dev/null -w "login: %{http_code}\n" --resolve erp.8848mh.com:443:127.0.0.1 https://erp.8848mh.com/web/login
+            echo "INSTALL DONE (safety backup: server-backups/\$STAMP)"
           EOF
 
       - name: Download backup assets from release

@@ -27,7 +27,7 @@ CORE_ADDONS = ROOT / "odoo" / "addons"
 CORE_LIST = ROOT / "docs" / "community-core-modules.txt"
 
 # Vendored modules: validated structurally but exempt from 8848 policy checks.
-VENDORED = {"sign_oca", "theme_liquid_glass"}
+VENDORED = {"sign_oca", "theme_liquid_glass", "franchise_management"}
 
 ENTERPRISE_BLOCKLIST = {
     "web_studio", "knowledge", "helpdesk", "approvals", "planning",
