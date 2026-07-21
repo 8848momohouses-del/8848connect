@@ -110,13 +110,12 @@ jobs:
             set -e
             cd /opt/8848-connect
             git fetch --prune origin && git reset --hard origin/main
-            SA=/etc/nginx/sites-available; SE=/etc/nginx/sites-enabled
-            echo "== backup current enabled site =="
-            sudo cp -a "$SE/odoo_http.conf" "/tmp/odoo_http.conf.bak.$(date +%s)" 2>/dev/null || true
-            echo "== install combined conf =="
-            sudo cp deployment/nginx/odoo_combined.conf "$SA/odoo_combined.conf"
-            sudo ln -sf "$SA/odoo_combined.conf" "$SE/odoo_combined.conf"
-            sudo rm -f "$SE/odoo_http.conf"
+            SE=/etc/nginx/sites-enabled
+            echo "== snapshot current sites-enabled =="
+            sudo mkdir -p /tmp/nginx-bak-$(date +%s) && sudo cp -a "$SE"/. "$_"/ 2>/dev/null || true
+            echo "== clean sites-enabled to a single real file (no symlinks) =="
+            sudo rm -f "$SE"/odoo_http.conf "$SE"/odoo_combined.conf
+            sudo cp deployment/nginx/odoo_combined.conf "$SE/odoo_combined.conf"
             echo "== test =="
             if sudo nginx -t 2>&1; then
               sudo systemctl reload nginx
@@ -124,7 +123,7 @@ jobs:
             else
               echo "!! nginx -t FAILED — reverting to HTTP-only !!"
               sudo rm -f "$SE/odoo_combined.conf"
-              sudo ln -sf "$SA/odoo_http.conf" "$SE/odoo_http.conf" 2>/dev/null || sudo cp deployment/nginx/odoo_http.conf "$SE/odoo_http.conf" 2>/dev/null || true
+              sudo cp deployment/nginx/odoo_http.conf "$SE/odoo_http.conf"
               sudo nginx -t && sudo systemctl reload nginx
               exit 1
             fi
