@@ -36,7 +36,7 @@ jobs:
         if: inputs.operation == 'inspect'
         run: |
           ssh -p 22022 -o StrictHostKeyChecking=no ${{ secrets.PROD_SSH_USER }}@${{ secrets.PROD_SERVER_IP }} << 'EOF'
-            set -e
+            set +e
             echo "== docker containers =="; docker ps --format '{{.Names}} {{.Image}} {{.Status}}'
             echo "== databases =="; docker exec 8848_db psql -U $(docker exec 8848_db printenv POSTGRES_USER) -lqt | cut -d'|' -f1 | grep -v template
             echo "== filestore dirs =="; docker exec 8848_odoo ls /var/lib/odoo/filestore/ 2>/dev/null || true
