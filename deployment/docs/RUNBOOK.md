@@ -7,7 +7,7 @@
    sudo apt update && sudo apt install -y docker.io docker-compose-v2 nginx certbot python3-certbot-nginx git
    ```
 3. **Configure DNS**:
-   - Create A records for `erp.8848mh.com`, `portal.8848mh.com`, and `api.8848mh.com` pointing to the VPS IP.
+   - Create A records for `erp.8848momofactory.com`, `portal.8848momofactory.com`, and `api.8848momofactory.com` pointing to the VPS IP.
 4. **Clone Repository**:
    ```bash
    sudo mkdir -p /opt/8848-connect
@@ -37,7 +37,7 @@
    ```
 3. Provision SSL via Certbot:
    ```bash
-   sudo certbot --nginx -d erp.8848mh.com -d portal.8848mh.com -d api.8848mh.com
+   sudo certbot --nginx -d erp.8848momofactory.com -d portal.8848momofactory.com -d api.8848momofactory.com
    ```
 
 ## 4. Initial Deployment

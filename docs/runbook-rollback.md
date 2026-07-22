@@ -53,7 +53,7 @@ restore latest verified backup per §2.
 
 ## Pending decisions (recorded, not yet approved)
 - Untrack local `odoo.conf` in favour of `config/odoo.conf.example`
-- Backend access model for erp.8848mh.com: IP allowlist vs VPN
+- Backend access model for erp.8848momofactory.com: IP allowlist vs VPN
 - Spaceship plan confirmation: root-access KVM VPS (Docker requirement)
 - Off-server backup target + restic credentials
 

@@ -8,7 +8,7 @@ The platform uses a single-node Linux VPS (Ubuntu LTS) with Docker Compose for t
 ### 1. Nginx Reverse Proxy (Host Level)
 - Handles incoming HTTP/HTTPS traffic.
 - Forces HTTPS via Let's Encrypt managed SSL.
-- Proxies `erp.8848mh.com`, `portal.8848mh.com`, and `api.8848mh.com` to the Odoo Docker container.
+- Proxies `erp.8848momofactory.com`, `portal.8848momofactory.com`, and `api.8848momofactory.com` to the Odoo Docker container.
 - Separates Longpolling/Websockets (port 8072) from standard HTTP (port 8069).
 - Caches static `/web/static/` assets for performance.
 

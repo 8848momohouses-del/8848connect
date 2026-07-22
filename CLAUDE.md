@@ -137,7 +137,7 @@ Milestone 0 infrastructure (2026-07-15): GitHub private repo
 tags from `v0-baseline`; CI on every push (validate: static checks +
 gitleaks + vendored guard; install-test: fresh-DB install + tests);
 `scripts/` (backup/restore/healthcheck/module_inventory/validate_addons);
-`deployment/` (compose + nginx templates for erp/portal/api.8848mh.com);
+`deployment/` (compose + nginx templates for erp/portal/api.8848momofactory.com);
 `docs/` (rollback runbook, release template, schema + module baselines).
 Branch protection requires GitHub Pro (pending decision). Release rule:
 only release-manifest modules are ever upgraded, never all.
